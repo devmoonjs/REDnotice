@@ -7,11 +7,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @NoArgsConstructor
 @Getter
+@Table(name = "users")
 public class User extends Timestamped {
 
     @Id
@@ -33,7 +32,6 @@ public class User extends Timestamped {
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
-        this.email = email;
         this.userRole = userRole != null ? userRole : UserRole.USER;
         this.password = password;
 
