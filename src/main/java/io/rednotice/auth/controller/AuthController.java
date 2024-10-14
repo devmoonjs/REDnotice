@@ -1,0 +1,39 @@
+package io.rednotice.auth.controller;
+
+import io.rednotice.auth.annotation.Auth;
+import io.rednotice.auth.request.LoginRequest;
+import io.rednotice.auth.request.SignoutRequest;
+import io.rednotice.auth.request.SignupRequest;
+import io.rednotice.auth.response.SignupResponse;
+import io.rednotice.auth.service.AuthService;
+import io.rednotice.common.AuthUser;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final AuthService authService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(signupRequest));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.status(HttpStatus.OK).header("Authorization",authService.login(loginRequest)).build();
+    }
+
+//    @PutMapping("/signout")
+//    public ResponseEntity<Long> deleteUser(@Auth AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
+//        Long id = authUser.getId();
+//        authService.deleteUser(id, signoutRequest);
+//        return ResponseEntity.noContent().build();
+//    }
+}
