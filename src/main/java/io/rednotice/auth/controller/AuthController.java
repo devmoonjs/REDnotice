@@ -1,6 +1,5 @@
 package io.rednotice.auth.controller;
 
-import io.rednotice.auth.annotation.Auth;
 import io.rednotice.auth.request.LoginRequest;
 import io.rednotice.auth.request.SignoutRequest;
 import io.rednotice.auth.request.SignupRequest;
@@ -11,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,10 +30,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).header("Authorization",authService.login(loginRequest)).build();
     }
 
-//    @PutMapping("/signout")
-//    public ResponseEntity<Long> deleteUser(@Auth AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
-//        Long id = authUser.getId();
-//        authService.deleteUser(id, signoutRequest);
-//        return ResponseEntity.noContent().build();
-//    }
+    @PutMapping("/signout")
+    public ResponseEntity<Long> deleteUser(@AuthenticationPrincipal AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
+        Long id = authUser.getId();
+        authService.deleteUser(id, signoutRequest);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -34,6 +36,8 @@ public class User extends Timestamped {
         this.email = email;
         this.userRole = userRole != null ? userRole : UserRole.USER;
         this.password = password;
+
+
     }
 
     public void update() {

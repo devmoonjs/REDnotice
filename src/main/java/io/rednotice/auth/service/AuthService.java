@@ -2,6 +2,7 @@ package io.rednotice.auth.service;
 
 
 import io.rednotice.auth.request.LoginRequest;
+
 import io.rednotice.auth.request.SignoutRequest;
 import io.rednotice.auth.request.SignupRequest;
 import io.rednotice.auth.response.SignupResponse;
@@ -46,14 +47,15 @@ public class AuthService {
                 signupRequest.getEmail(),
                 encodedPassword,
                 userRole
+
         );
 
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(
                 savedUser.getId(),
-                savedUser.getUsername(),
                 savedUser.getEmail(),
+                savedUser.getUsername(),
                 savedUser.getCreatedAt()
         );
 
@@ -77,16 +79,17 @@ public class AuthService {
                 user.getUserRole()
         );
     }
+    @Transactional
+    public void deleteUser(Long id, SignoutRequest signoutRequest) {
 
-//    public void deleteUser(Long id, SignoutRequest signoutRequest) {
-//
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() ->new NoSuchElementException("User not found"));
-//
-//        if(passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())){
-//            user.update();
-//        } else throw new IllegalArgumentException("Wrong password");
-//    }
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->new NoSuchElementException("User not found"));
+
+        if(passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())){
+            user.update();
+            userRepository.save(user);
+        } else throw new IllegalArgumentException("Wrong password");
+    }
 }
 
 
