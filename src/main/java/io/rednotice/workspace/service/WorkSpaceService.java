@@ -1,19 +1,18 @@
 package io.rednotice.workspace.service;
 
+import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
 import io.rednotice.user.entity.User;
-import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.repository.UserRepository;
 import io.rednotice.workspace.entity.WorkSpace;
 import io.rednotice.workspace.enums.MemberRole;
 import io.rednotice.workspace.repository.WorkSpaceRepository;
 import io.rednotice.workspace.request.AddMemberRequest;
-import io.rednotice.workspace.request.ChangeMemberRoleRequest;
-import io.rednotice.workspace.request.WorkSpaceSaveRequest;
 import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
+import io.rednotice.workspace.response.WorkSpaceNameResponse;
 import io.rednotice.workspace.response.WorkSpaceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,31 +27,41 @@ import java.util.stream.Collectors;
 public class WorkSpaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
-    private final MemberRepository memberRepository;
     private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
-    @Transactional
-    public WorkSpaceResponse saveWorkSpace(WorkSpaceSaveRequest request) {
-        WorkSpace workSpace = workSpaceRepository.save(new WorkSpace(request));
+    public List<WorkSpaceNameResponse> findWorkSpaces(AuthUser authUser) {
 
-        return WorkSpaceResponse.of(workSpace);
-    }
+        User user = findUserByAuthUser(authUser);
 
-    public List<WorkSpaceResponse> findAll() {
-        return workSpaceRepository.findAll().stream()
-                .map(WorkSpaceResponse::of)
+        List<Long> workSpaceIdList = memberRepository.findWorkspaceByUser(user);
+        List<String> workSpaceList = workSpaceRepository.findByIdList(workSpaceIdList);
+
+        return workSpaceList.stream()
+                .map(WorkSpaceNameResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public WorkSpaceResponse findById(Long id) {
+    public WorkSpaceResponse findWorkspaceById(AuthUser authUser, Long id) {
+
+        User user = findUserByAuthUser(authUser);
+        WorkSpace workSpace = findWorkSpaceById(id);
+
+        isMember(user, workSpace);
+
         return WorkSpaceResponse.of(findWorkSpaceById(id));
     }
 
     @Transactional
-    public WorkSpaceResponse updateWorkSpace(Long id, WorkSpaceUpdateRequest request) {
+    public WorkSpaceResponse updateWorkSpace(AuthUser authUser, Long id, WorkSpaceUpdateRequest request) {
+
+        User user = findUserByAuthUser(authUser);
         WorkSpace workSpace = findWorkSpaceById(id);
 
-        if (request.getName() != null && request.getName().isEmpty()) {
+        isMember(user, workSpace);
+        isManage(user, workSpace);
+
+        if (request.getName() != null) {
             workSpace.changeName(request.getName());
         }
 
@@ -63,41 +72,40 @@ public class WorkSpaceService {
         return WorkSpaceResponse.of(workSpace);
     }
 
-    public void deleteWorSpace(Long id) {
+    @Transactional
+    public void deleteWorkSpace(AuthUser authUser, Long id) {
+        User user = findUserByAuthUser(authUser);
+        WorkSpace workSpace = findWorkSpaceById(id);
+
+        isManage(user, workSpace);
+
         workSpaceRepository.deleteById(id);
     }
 
-    public void addMember(Long id, AddMemberRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
-        );
-
-        isAdmin(user);
-
+    @Transactional
+    public void addMember(AuthUser authUser, Long id, AddMemberRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         WorkSpace workSpace = findWorkSpaceById(id);
+
+        User manger = findUserByAuthUser(authUser);
+
+        isManage(manger, workSpace);
+
+        if (memberRepository.findByUserAndWorkspace(user, workSpace).isPresent()) {
+            throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
+        }
 
         memberRepository.save(new Member(user, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
-
-
-    private void isAdmin(User user) {
-        if (user.getUserRole() != UserRole.ADMIN) {
-            throw new IllegalArgumentException("ADMIN 권한만 워크스페이스 생성이 가능합니다.");
-        }
+    private Member isMember(User user, WorkSpace workSpace) {
+        return memberRepository.findByUserAndWorkspace(user, workSpace).orElseThrow(
+                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
+        );
     }
 
-    public void changeMemberRole(Long workSpaceId, Long memberId, ChangeMemberRoleRequest request) {
-        WorkSpace workSpace = findWorkSpaceById(workSpaceId);
-        User user = getUserById(memberId);
-
-        Member member = memberRepository.findByUserAndWorkSpace(user, workSpace);
-
-        member.changeRole(request.getMemberRole());
-    }
-
-    private User getUserById(Long memberId) {
-        return userRepository.findById(memberId).orElseThrow(
+    private User findUserByAuthUser(AuthUser authUser) {
+        return userRepository.findById(authUser.getId()).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
@@ -106,5 +114,13 @@ public class WorkSpaceService {
         return workSpaceRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
+    }
+
+    public void isManage(User user, WorkSpace workSpace) {
+        Member member = isMember(user, workSpace);
+
+        if (member.getMemberRole() != MemberRole.MANAGE) {
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+        }
     }
 }

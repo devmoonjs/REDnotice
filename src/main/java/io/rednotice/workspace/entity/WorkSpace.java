@@ -1,7 +1,7 @@
 package io.rednotice.workspace.entity;
 
 import io.rednotice.board.entity.Board;
-import io.rednotice.user.entity.User;
+import io.rednotice.member.entity.Member;
 import io.rednotice.workspace.request.WorkSpaceSaveRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,12 +19,13 @@ public class WorkSpace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     private String description;
 
-    @OneToMany(mappedBy = "workspace")
-    private List<User> userList = new ArrayList<>();
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.REMOVE)
+    private List<Member> memberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "workspace")
     private List<Board> boardList = new ArrayList<>();
