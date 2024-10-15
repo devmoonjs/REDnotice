@@ -20,6 +20,8 @@ public enum ErrorStatus implements BaseCode {
 
     // workspace
     _NOT_FOUND_WORKSPACE(HttpStatus.NOT_FOUND, "404", "존재하지 않은 워크스페이스입니다"),
+
+
     _DUPLICATE_MANAGE(HttpStatus.BAD_REQUEST, "404", "매니저가 중복됩니다."),
 
     // member
@@ -34,6 +36,11 @@ public enum ErrorStatus implements BaseCode {
     _ATTACHMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "404", "첨부 파일을 찾을 수 없습니다");
 
 
+
+    // board
+    _NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "404", "존재하지 않은 보드입니다"),
+    // lists
+    _NOT_FOUND_LISTS(HttpStatus.NOT_FOUND, "404", "존재하지 않은 리스트입니다");
     private HttpStatus httpStatus;
     private String statusCode;
     private String message;

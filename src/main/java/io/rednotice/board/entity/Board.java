@@ -39,11 +39,11 @@ public class Board {
         this.workspace = workspace;
     }
 
-    public void changeTitle(String name) {
+    public void changeTitle(String title) {
         this.title = title;
     }
 
-    public void changeColor(String description) {
+    public void changeColor(String color) {
         this.color = color;
     }
 

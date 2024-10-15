@@ -24,5 +24,55 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ListsService {
+    private final ListsRepository listsRepository;
+    private final BoardRepository boardRepository;
 
+    @Transactional
+    public ListsResponse saveLists(ListsSaveRequest request) {
+        Board board = findBoardById(request.getBoardId());
+        Lists lists = listsRepository.save(new Lists(request, board));
+
+        return ListsResponse.of(lists);
+    }
+
+    public List<ListsResponse> findAll() {
+        return listsRepository.findAll().stream()
+                .map(ListsResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public ListsResponse findById(Long id) {
+        return ListsResponse.of(findListById(id));
+    }
+
+    @Transactional
+    public ListsResponse updateLists(Long id, ListsUpdateRequest request) {
+        Lists lists = findListById(id);
+
+        if (request.getName() != null && request.getName().isEmpty()) {
+            lists.changeName(request.getName());
+        }
+
+        if (request.getSequence() != 0) {
+            lists.changeSequence(request.getSequence());
+        }
+
+        return ListsResponse.of(lists);
+    }
+
+    public void deleteList(Long id) {
+        listsRepository.deleteById(id);
+    }
+
+    private Lists findListById(Long id) {
+        return listsRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_LISTS)
+        );
+    }
+
+    private Board findBoardById(Long id) {
+        return boardRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
+        );
+    }
 }
