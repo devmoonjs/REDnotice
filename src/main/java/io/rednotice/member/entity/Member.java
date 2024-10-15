@@ -22,14 +22,14 @@ public class Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
-    private WorkSpace workSpace;
+    private WorkSpace workspace;
 
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
-    public Member(User user, WorkSpace workSpace, MemberRole memberRole) {
+    public Member(User user, WorkSpace workspace, MemberRole memberRole) {
         this.user = user;
-        this.workSpace = workSpace;
+        this.workspace = workspace;
         this.memberRole = memberRole;
     }
 
