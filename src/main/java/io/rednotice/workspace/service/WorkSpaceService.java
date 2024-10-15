@@ -1,5 +1,7 @@
 package io.rednotice.workspace.service;
 
+import io.rednotice.common.apipayload.status.ErrorStatus;
+import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
 import io.rednotice.user.entity.User;
@@ -94,13 +96,13 @@ public class WorkSpaceService {
 
     private User getUserById(Long memberId) {
         return userRepository.findById(memberId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 유저입니다.")
+                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
 
     private WorkSpace findWorkSpaceById(Long id) {
         return workSpaceRepository.findById(id).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 워크스페이스입니다.")
+                () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
     }
 }
