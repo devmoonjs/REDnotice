@@ -19,10 +19,10 @@ public class Board {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_space_id", nullable = false)
-    private WorkSpace workSpace;
+    @JoinColumn(name = "workspace_id", nullable = false)
+    private WorkSpace workspace;
 
-    @OneToMany(mappedBy = "board_id", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
     private List<Lists> lists;
 
 

@@ -37,7 +37,7 @@ public class WorkSpaceController {
 
     // Security 추가 후 해당 유저의 워크스페이스만 조회되도록 변경 예정
     @GetMapping("/workspaces/{id}")
-    public ResponseEntity<WorkSpaceResponse> saveWorkSpace(@PathVariable Long id) {
+    public ResponseEntity<WorkSpaceResponse> findWorkSpace(@PathVariable Long id) {
 
         return ResponseEntity.ok(workSpaceService.findById(id));
     }
