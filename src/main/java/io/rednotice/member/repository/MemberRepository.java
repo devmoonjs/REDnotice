@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByUserAndWorkSpace(User user, WorkSpace workSpace);
+    Member findByUserIdAndWorkSpaceId(Long userId, Long workSpaceId);
 }
