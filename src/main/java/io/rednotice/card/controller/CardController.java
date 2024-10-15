@@ -33,6 +33,12 @@ public class CardController {
         return ApiResponse.ok(cardService.addManager(authUser, cardId, cardManagerRequest));
     }
 
+    @GetMapping
+    public ApiResponse<Page<CardSearchDto>> searchCards(@ParameterObject CardPageRequest cardPageRequest,
+                                                        @ParameterObject CardSearchRequest cardSearchRequest) {
+        return ApiResponse.ok(cardService.searchCards(cardPageRequest, cardSearchRequest));
+    }
+
 
     @DeleteMapping("/{cardId}")
     public ApiResponse<String> deleteCard(@AuthenticationPrincipal AuthUser authUser,

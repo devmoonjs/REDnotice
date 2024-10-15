@@ -65,6 +65,18 @@ public class CardService {
         return new CardManagerResponse(cardId, manager.getId());
     }
 
+    public Page<CardSearchDto> searchCards(CardPageRequest cardPageRequest, CardSearchRequest searchRequest) {
+        Pageable pageable = PageRequest.of(cardPageRequest.getPage(), cardPageRequest.getSize());
+        return cardRepository.search(
+                searchRequest.getTitle(),
+                searchRequest.getDescription(),
+                searchRequest.getDueDate(),
+                searchRequest.getManagerName(),
+                searchRequest.getBoardId(),
+                pageable
+        );
+    }
+
 
     @Transactional
     public void deleteCard(AuthUser authUser, Long cardId, CardDeleteRequest deleteRequest) {
