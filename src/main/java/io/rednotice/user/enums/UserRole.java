@@ -6,9 +6,9 @@ public enum UserRole {
 
     USER, ADMIN;
 
-    public static UserRole of(String userRole) {
+    public static UserRole of(String role) {
         return Arrays.stream(UserRole.values())
-                .filter(r -> r.name().equalsIgnoreCase(userRole))
+                .filter(r -> r.name().equalsIgnoreCase(role))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 권한입니다"));
     }
