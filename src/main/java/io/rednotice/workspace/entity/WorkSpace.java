@@ -1,5 +1,6 @@
 package io.rednotice.workspace.entity;
 
+import io.rednotice.board.entity.Board;
 import io.rednotice.user.entity.User;
 import io.rednotice.workspace.request.WorkSpaceSaveRequest;
 import jakarta.persistence.*;
@@ -24,6 +25,9 @@ public class WorkSpace {
 
     @OneToMany(mappedBy = "workspace")
     private List<User> userList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "workspace")
+    private List<Board> boardList = new ArrayList<>();
 
     public WorkSpace(WorkSpaceSaveRequest request) {
         this.name = request.getName();
