@@ -1,5 +1,6 @@
 package io.rednotice.board.entity;
 
+import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.list.entity.Lists;
 import io.rednotice.workspace.entity.WorkSpace;
 import jakarta.persistence.Entity;
@@ -32,13 +33,18 @@ public class Board {
     @Column(length = 20)
     private String color;
 
+    public Board(BoardSaveRequest request, WorkSpace workspace) {
+        this.title = request.getTitle();
+        this.color = request.getColor();
+        this.workspace = workspace;
+    }
 
     public void changeTitle(String name) {
         this.title = title;
     }
 
-    public void changeDescription(String description) {
-        this.description = description;
+    public void changeColor(String description) {
+        this.color = color;
     }
 
 

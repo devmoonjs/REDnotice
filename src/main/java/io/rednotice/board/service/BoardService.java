@@ -5,7 +5,10 @@ import io.rednotice.board.repository.BoardRepository;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
+import io.rednotice.common.apipayload.status.ErrorStatus;
+import io.rednotice.common.exception.ApiException;
 import io.rednotice.workspace.entity.WorkSpace;
+import io.rednotice.workspace.repository.WorkSpaceRepository;
 import io.rednotice.workspace.request.WorkSpaceSaveRequest;
 import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
 import io.rednotice.workspace.response.WorkSpaceResponse;
@@ -21,10 +24,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final WorkSpaceRepository workSpaceRepository;
 
     @Transactional
     public BoardResponse saveBoard(BoardSaveRequest request) {
-        Board board = boardRepository.save(new Board(request));
+        WorkSpace workspace = findWorkSpaceById(request.getWorkspaceId());
+        Board board = boardRepository.save(new Board(request, workspace));
 
         return BoardResponse.of(board);
     }
@@ -49,7 +54,7 @@ public class BoardService {
         }
 
         if (request.getColor() != null) {
-            board.changeDescription(request.getColor());
+            board.changeColor(request.getColor());
         }
 
         return BoardResponse.of(board);
@@ -62,6 +67,12 @@ public class BoardService {
     private Board findBoardById(Long id) {
         return boardRepository.findById(id).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 보드입니다.")
+        );
+    }
+
+    private WorkSpace findWorkSpaceById(Long id) {
+        return workSpaceRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
     }
 }

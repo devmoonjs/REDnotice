@@ -19,7 +19,6 @@ public class BoardController {
     // 보드 생성
     @PostMapping("/boards")
     public ResponseEntity<BoardResponse> saveBoard(@RequestBody BoardSaveRequest request) {
-
         BoardResponse response = boardService.saveBoard(request);
 
         return ResponseEntity.ok(response);
