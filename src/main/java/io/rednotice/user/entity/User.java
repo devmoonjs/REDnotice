@@ -4,6 +4,7 @@ import io.rednotice.common.Timestamped;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.enums.UserStatus;
 import io.rednotice.workspace.entity.WorkSpace;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,8 @@ public class User extends Timestamped {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.USER;
+    @Column(nullable = false)
+    private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
@@ -37,10 +39,9 @@ public class User extends Timestamped {
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
-        this.userRole = userRole != null ? userRole : UserRole.USER;
+        this.email = email;
+        this.userRole = userRole;
         this.password = password;
-
-
     }
 
     public void update() {

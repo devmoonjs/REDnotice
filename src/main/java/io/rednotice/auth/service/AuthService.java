@@ -40,14 +40,11 @@ public class AuthService {
             throw new IllegalArgumentException("Email already in use");
         }
 
-        UserRole userRole = signupRequest.getRole() != null ? signupRequest.getRole() : UserRole.USER;
-
         User user = new User(
                 signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
-                userRole
-
+                signupRequest.getRole()
         );
 
         User savedUser = userRepository.save(user);
