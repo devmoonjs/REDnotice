@@ -32,12 +32,12 @@ public class BoardController {
     }
 
     // 보드 단건 조회
-    @GetMapping("/boards/{boardid}")
-    public ResponseEntity<List<WorkSpaceResponse>> findAll() {
+//    @GetMapping("/boards/{boardid}")
+//    public ResponseEntity<List<WorkSpaceResponse>> findAll() {
+//
+//        return ResponseEntity.ok(workSpaceService.findAll());
+//    }
 
-        return ResponseEntity.ok(workSpaceService.findAll());
-    }
-
-    @DeleteMapping("/boards/{boardid}")
+//    @DeleteMapping("/boards/{boardid}")
 
 }

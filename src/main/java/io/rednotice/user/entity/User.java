@@ -3,6 +3,7 @@ package io.rednotice.user.entity;
 import io.rednotice.common.Timestamped;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.enums.UserStatus;
+import io.rednotice.workspace.entity.WorkSpace;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,10 @@ public class User extends Timestamped {
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
+
+    @ManyToOne
+    @JoinColumn(name = "workspace_id")
+    private WorkSpace workspace;
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
