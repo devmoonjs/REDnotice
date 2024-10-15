@@ -68,7 +68,7 @@ public class WorkSpaceService {
     }
 
     public void addMember(Long id, AddMemberRequest request) {
-        User user = getUserById(request.getUserId());
+        User user = userRepository.findByEmail(request.getEmail());
 
         isAdmin(user);
 

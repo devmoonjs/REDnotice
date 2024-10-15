@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AddMemberRequest {
 
-    private Long userId;
+    private String email;
     private String memberRole;
 }
