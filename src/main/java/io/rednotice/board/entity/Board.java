@@ -33,5 +33,14 @@ public class Board {
     private String color;
 
 
+    public void changeTitle(String name) {
+        this.title = title;
+    }
+
+    public void changeDescription(String description) {
+        this.description = description;
+    }
+
+
 
 }
