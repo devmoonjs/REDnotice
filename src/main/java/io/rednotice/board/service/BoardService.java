@@ -66,7 +66,7 @@ public class BoardService {
 
     private Board findBoardById(Long id) {
         return boardRepository.findById(id).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 보드입니다.")
+                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
         );
     }
 
