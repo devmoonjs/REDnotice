@@ -31,7 +31,7 @@ public class CardController {
     public ApiResponse<CardManagerResponse> addCardManager(@AuthenticationPrincipal AuthUser authUser,
                                                            @PathVariable Long cardId,
                                                            @RequestBody CardManagerRequest cardManagerRequest) {
-        return ApiResponse.ok(cardService.addManager(authUser, cardId, cardManagerRequest));
+        return ApiResponse.ok(cardService.changeManager(authUser, cardId, cardManagerRequest));
     }
 
     @GetMapping

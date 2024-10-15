@@ -22,7 +22,7 @@ public class CardResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public static CardResponse of(Card card, User user) {
+    public static CardResponse of(Card card) {
         return new CardResponse(
                 card.getId(),
                 card.getTitle(),
@@ -30,7 +30,7 @@ public class CardResponse {
                 card.getDueDate(),
                 card.getSeq(),
                 card.getViews(),
-                new UserDto(user.getId(), user.getEmail(), user.getUsername()),
+                new UserDto(card.getUser().getId(), card.getUser().getEmail(), card.getUser().getUsername()),
                 card.getCreatedAt(),
                 card.getModifiedAt()
         );

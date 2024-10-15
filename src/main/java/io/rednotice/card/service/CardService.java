@@ -12,9 +12,11 @@ import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.list.entity.Lists;
+import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
 import io.rednotice.user.entity.User;
 import io.rednotice.user.repository.UserRepository;
+import io.rednotice.workspace.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,11 +54,11 @@ public class CardService {
         );
         Card saveCard = cardRepository.save(card);
 
-        return CardResponse.of(saveCard, user);
+        return CardResponse.of(saveCard);
     }
 
     @Transactional
-    public CardManagerResponse addManager(AuthUser authUser, Long cardId, CardManagerRequest managerRequest) {
+    public CardManagerResponse changeManager(AuthUser authUser, Long cardId, CardManagerRequest managerRequest) {
         checkMemberRole(authUser.getId(), managerRequest.getWorkSpaceId());
 
         User manager = userRepository.getUserById(managerRequest.getManagerId());
@@ -84,6 +86,14 @@ public class CardService {
     }
 
     @Transactional
+    public CardResponse updateCard(AuthUser authUser, Long cardId, CardUpdateRequest updateRequest) {
+        checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
+        Card card = cardRepository.getCardById(cardId);
+        card.updateCard(updateRequest.getTitle(), updateRequest.getDescription(), updateRequest.getDueDate());
+        return CardResponse.of(card);
+    }
+
+    @Transactional
     public void deleteCard(AuthUser authUser, Long cardId, CardDeleteRequest deleteRequest) {
         checkMemberRole(authUser.getId(), deleteRequest.getWorkSpaceId());
         cardRepository.deleteById(cardId);
@@ -91,7 +101,8 @@ public class CardService {
 
     private void checkMemberRole(Long userId, Long workSpaceId) {
         // 읽기 전용 역할인 경우 예외 발생
-        if (memberRepository.findByUserIdAndWorkSpaceId(userId, workSpaceId) == null) {
+        Member member = memberRepository.getMember(userId, workSpaceId);
+        if (member.getMemberRole().equals(MemberRole.READ)) {
             throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
         }
     }

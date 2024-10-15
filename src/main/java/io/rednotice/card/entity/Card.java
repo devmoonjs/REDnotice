@@ -66,9 +66,15 @@ public class Card extends Timestamped {
     }
 
     public void updateCard(String title, String description, LocalDate dueDate) {
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
+        if (title != null) {
+            this.title = title;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+        if (dueDate != null) {
+            this.dueDate = dueDate;
+        }
     }
 
     public void changeSeq(int seq) {
