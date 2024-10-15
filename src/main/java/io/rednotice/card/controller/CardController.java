@@ -1,6 +1,7 @@
 package io.rednotice.card.controller;
 
 import io.rednotice.card.dto.request.*;
+import io.rednotice.card.dto.response.CardDetailResponse;
 import io.rednotice.card.dto.response.CardManagerResponse;
 import io.rednotice.card.dto.response.CardResponse;
 import io.rednotice.card.dto.CardSearchDto;
@@ -39,6 +40,17 @@ public class CardController {
         return ApiResponse.ok(cardService.searchCards(cardPageRequest, cardSearchRequest));
     }
 
+    @GetMapping("/{cardId}")
+    public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
+        return ApiResponse.ok(cardService.getCard(cardId));
+    }
+
+    @PatchMapping("/{cardId}")
+    public ApiResponse<CardResponse> updateCard(@AuthenticationPrincipal AuthUser authUser,
+                                                @PathVariable Long cardId,
+                                                @RequestBody CardUpdateRequest cardUpdateRequest) {
+        return ApiResponse.ok(cardService.updateCard(authUser, cardId, cardUpdateRequest));
+    }
 
     @DeleteMapping("/{cardId}")
     public ApiResponse<String> deleteCard(@AuthenticationPrincipal AuthUser authUser,

@@ -24,7 +24,7 @@ public class CardDetailResponse {   // 카드 단건 조회 시 반환 DTO
     // 댓글 구현완료되면 댓글 Dto 추가(댓글 작성자, 작성 내용, 날짜 ...)
     // 이때 batchsize 얼마나 할 것인지 확정하기
 
-    public static CardDetailResponse of(Card card, User user) {
+    public static CardDetailResponse of(Card card) {
         return new CardDetailResponse(
                 card.getId(),
                 card.getTitle(),
@@ -32,7 +32,7 @@ public class CardDetailResponse {   // 카드 단건 조회 시 반환 DTO
                 card.getDueDate(),
                 card.getSeq(),
                 card.getViews(),
-                new UserDto(user.getId(), user.getEmail(), user.getUsername()),
+                new UserDto(card.getUser().getId(), card.getUser().getEmail(), card.getUser().getUsername()),
                 card.getCreatedAt(),
                 card.getModifiedAt()
                 // 댓글 dto 추가

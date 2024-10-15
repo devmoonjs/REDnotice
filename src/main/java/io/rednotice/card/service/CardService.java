@@ -2,6 +2,7 @@ package io.rednotice.card.service;
 
 import io.rednotice.board.entity.Board;
 import io.rednotice.card.dto.request.*;
+import io.rednotice.card.dto.response.CardDetailResponse;
 import io.rednotice.card.dto.response.CardManagerResponse;
 import io.rednotice.card.dto.response.CardResponse;
 import io.rednotice.card.dto.CardSearchDto;
@@ -77,6 +78,10 @@ public class CardService {
         );
     }
 
+    public CardDetailResponse getCard(Long cardId) {
+        Card card = cardRepository.getCardById(cardId);
+        return CardDetailResponse.of(card);
+    }
 
     @Transactional
     public void deleteCard(AuthUser authUser, Long cardId, CardDeleteRequest deleteRequest) {
