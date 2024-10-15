@@ -1,0 +1,46 @@
+package io.rednotice.workspace.controller;
+
+import io.rednotice.common.AuthUser;
+import io.rednotice.user.enums.UserRole;
+import io.rednotice.workspace.request.ChangeMemberRoleRequest;
+import io.rednotice.workspace.request.WorkSpaceSaveRequest;
+import io.rednotice.workspace.response.WorkSpaceResponse;
+import io.rednotice.workspace.service.WorkSpaceAdminService;
+import io.rednotice.workspace.service.WorkSpaceService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1")
+public class WorkSpaceAdminController {
+
+    private final WorkSpaceService workSpaceService;
+    private final WorkSpaceAdminService workSpaceAdminService;
+
+    @Secured(UserRole.Authority.ADMIN)
+    @PostMapping("/workspaces")
+    public ResponseEntity<WorkSpaceResponse> saveWorkSpace(
+            @AuthenticationPrincipal AuthUser authUser,
+            @RequestBody WorkSpaceSaveRequest request) {
+
+        WorkSpaceResponse response = workSpaceAdminService.saveWorkSpace(authUser, request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Secured(UserRole.Authority.ADMIN)
+    @PatchMapping("/workspaces/{workSpaceId}/members/{memberId}/role")
+    public ResponseEntity<String> changeMemberRole(
+            @PathVariable Long workSpaceId,
+            @PathVariable Long memberId,
+            @RequestBody ChangeMemberRoleRequest request) {
+
+        workSpaceAdminService.changeMemberRole(workSpaceId, memberId, request);
+
+        return ResponseEntity.ok("권한 변경되었습니다.");
+    }
+}

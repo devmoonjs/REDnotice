@@ -1,13 +1,15 @@
 package io.rednotice.user.entity;
 
 import io.rednotice.common.Timestamped;
+import io.rednotice.member.entity.Member;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.enums.UserStatus;
-import io.rednotice.workspace.entity.WorkSpace;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -33,9 +35,8 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;
 
-    @ManyToOne
-    @JoinColumn(name = "workspace_id")
-    private WorkSpace workspace;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Member> memberList = new ArrayList<>();
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;
