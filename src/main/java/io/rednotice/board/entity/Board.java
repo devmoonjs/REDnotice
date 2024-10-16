@@ -24,7 +24,7 @@ public class Board {
     @JoinColumn(name = "workspace_id", nullable = false)
     private WorkSpace workspace;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Lists> lists = new ArrayList<>();
 
 

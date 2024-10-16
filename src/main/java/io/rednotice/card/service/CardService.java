@@ -84,7 +84,7 @@ public class CardService {
     }
 
     public Page<CardSearchDto> searchCards(CardPageRequest cardPageRequest, CardSearchRequest searchRequest) {
-        Pageable pageable = PageRequest.of(cardPageRequest.getPage(), cardPageRequest.getSize());
+        Pageable pageable = PageRequest.of(cardPageRequest.getPage() - 1, cardPageRequest.getSize());
         return cardRepository.search(
                 searchRequest.getTitle(),
                 searchRequest.getDescription(),
