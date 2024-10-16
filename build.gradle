@@ -46,7 +46,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     //aws s3
     implementation 'software.amazon.awssdk:s3:2.20.0'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter:3.0.2'
 
     // ParameterObject
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'

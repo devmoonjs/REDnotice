@@ -2,8 +2,10 @@ package io.rednotice.common.exception;
 
 import io.rednotice.common.apipayload.ApiResponse;
 import io.rednotice.common.apipayload.BaseCode;
+import io.rednotice.common.apipayload.status.ErrorStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,6 +18,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<String>> handleAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(ErrorStatus._NOT_AUTHENTICATIONPRINCIPAL_USER.getHttpStatus())
+                .body(ApiResponse.fail(ErrorStatus._NOT_AUTHENTICATIONPRINCIPAL_USER));
+    }
+
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<String>> handleCustomException(ApiException e) {
