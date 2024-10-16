@@ -4,6 +4,7 @@ import io.rednotice.board.request.BoardDeleteRequest;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
+import io.rednotice.board.response.BoardSingleResponse;
 import io.rednotice.board.service.BoardService;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.ApiResponse;
@@ -36,7 +37,7 @@ public class BoardController {
 
     // 보드 단건 조회
     @GetMapping("/boards/{boardId}")
-    public ApiResponse<BoardResponse> getBoard(@PathVariable Long boardId) {
+    public ApiResponse<BoardSingleResponse> getBoard(@PathVariable Long boardId) {
 
         return ApiResponse.ok(boardService.findById(boardId));
     }

@@ -6,6 +6,7 @@ import io.rednotice.board.request.BoardDeleteRequest;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
+import io.rednotice.board.response.BoardSingleResponse;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
@@ -48,8 +49,8 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    public BoardResponse findById(Long id) {
-        return BoardResponse.of(boardRepository.findBoardById(id));
+    public BoardSingleResponse findById(Long id) {
+        return BoardSingleResponse.of(boardRepository.findBoardById(id));
     }
 
 
