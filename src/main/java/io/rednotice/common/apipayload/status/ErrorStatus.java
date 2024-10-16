@@ -37,6 +37,7 @@ public enum ErrorStatus implements BaseCode {
 
     // board
     _NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "404", "존재하지 않은 보드입니다"),
+    _INVALID_TITLE_REQUEST(HttpStatus.NOT_FOUND, "404", "제목이 비어있습니다. 제목을 입력해주세요."),
     // lists
     _NOT_FOUND_LISTS(HttpStatus.NOT_FOUND, "404", "존재하지 않은 리스트입니다"),
 

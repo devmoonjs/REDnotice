@@ -32,8 +32,10 @@ public class BoardService {
     private final WorkSpaceRepository workSpaceRepository;
     private final MemberRepository memberRepository;
 
+
     @Transactional
     public BoardResponse saveBoard(BoardSaveRequest request) {
+        checkTitle(request.getTitle()); // 예외처리 : 제목(title)이 없는 경우
         WorkSpace workspace = findWorkSpaceById(request.getWorkspaceId());
         Board board = boardRepository.save(new Board(request, workspace));
 
@@ -53,6 +55,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse updateBoard(AuthUser authUser,Long boardId, BoardUpdateRequest updateRequest) {
+        checkTitle(updateRequest.getTitle()); // 예외처리 : 제목(title)이 없는 경우
         checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
         Board board = boardRepository.findBoardById(boardId);
 
@@ -84,6 +87,12 @@ public class BoardService {
         Member member = memberRepository.getMember(userId, workSpaceId);
         if (member.getMemberRole().equals(MemberRole.READ)) {
             throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
+        }
+    }
+
+    private void checkTitle(String title) {
+        if (title.isEmpty()) {
+            throw new ApiException(ErrorStatus._INVALID_TITLE_REQUEST);
         }
     }
 }
