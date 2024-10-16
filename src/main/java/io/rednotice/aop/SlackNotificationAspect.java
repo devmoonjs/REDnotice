@@ -28,8 +28,8 @@ public class SlackNotificationAspect {
     public void sendSlackNotification(JoinPoint joinPoint) {
 
         String methodName = joinPoint.getSignature().getName();
-        String message = "메서드 '" + methodName + "'가 호출되었습니다.";
-        
+        String message = "메서드 '" + methodName + "'이/가 호출되었습니다.";
+
         slackService.sendNotification(message);
     }
 }

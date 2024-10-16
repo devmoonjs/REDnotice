@@ -1,6 +1,7 @@
 package io.rednotice.workspace.controller;
 
 import io.rednotice.common.AuthUser;
+import io.rednotice.common.anotation.SlackNotify;
 import io.rednotice.common.apipayload.ApiResponse;
 import io.rednotice.workspace.request.AddMemberRequest;
 import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
@@ -48,6 +49,7 @@ public class WorkSpaceController {
         return ApiResponse.ok(response);
     }
 
+    @SlackNotify
     @PostMapping("/workspaces/{id}/invite")
     public ApiResponse<String> addMember(
             @AuthenticationPrincipal AuthUser authUser,
