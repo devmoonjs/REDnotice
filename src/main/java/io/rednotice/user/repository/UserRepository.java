@@ -16,4 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
+
+    default User getUserByEmail(String email) {
+        return findByEmail(email).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
+        );
+    }
 }

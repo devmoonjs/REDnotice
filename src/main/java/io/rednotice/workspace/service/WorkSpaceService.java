@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +32,7 @@ public class WorkSpaceService {
 
     public List<WorkSpaceNameResponse> findWorkSpaces(AuthUser authUser) {
 
-        User user = findUserByAuthUser(authUser);
+        User user = userRepository.getUserById(authUser.getId());
 
         List<Long> workSpaceIdList = memberRepository.findWorkspaceByUser(user);
         List<String> workSpaceList = workSpaceRepository.findByIdList(workSpaceIdList);
@@ -58,13 +57,7 @@ public class WorkSpaceService {
 
         WorkSpace workSpace = findWorkSpaceById(id);
 
-        if (request.getName() != null) {
-            workSpace.changeName(request.getName());
-        }
-
-        if (request.getDescription() != null) {
-            workSpace.changeDescription(request.getDescription());
-        }
+        workSpace.updateWorkspace(request);
 
         return WorkSpaceResponse.of(workSpace);
     }
@@ -84,9 +77,7 @@ public class WorkSpaceService {
         Member member = isMember(authUser.getId(), id);
         isManage(member);
 
-        User newUser = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
-        );
+        User newUser = userRepository.getUserByEmail(request.getEmail());
         WorkSpace workSpace = findWorkSpaceById(id);
 
         if (memberRepository.findByUserAndWorkspace(newUser, workSpace).isPresent()) {
@@ -99,12 +90,6 @@ public class WorkSpaceService {
     private Member isMember(Long userId, Long workspaceId) {
         return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
                 () -> new ApiException(ErrorStatus._INVALID_REQUEST)
-        );
-    }
-
-    private User findUserByAuthUser(AuthUser authUser) {
-        return userRepository.findById(authUser.getId()).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
 
