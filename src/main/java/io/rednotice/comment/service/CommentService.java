@@ -12,9 +12,7 @@ import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
-import io.rednotice.workspace.entity.WorkSpace;
 import io.rednotice.workspace.enums.MemberRole;
-import io.rednotice.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,6 @@ public class CommentService {
 
     private final CardRepository cardRepository;
     private final CommentRepository commentRepository;
-    private final WorkSpaceRepository workSpaceRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -40,6 +37,7 @@ public class CommentService {
         return CommentResponse.of(comment);
     }
 
+    @Transactional
     public CommentResponse updateComment(AuthUser authUser, CommentUpdateRequest request, Long commentId) {
 
         isCommentOwner(authUser.getId(), commentId);
@@ -53,6 +51,7 @@ public class CommentService {
         return CommentResponse.of(comment);
     }
 
+    @Transactional
     public void deleteComment(AuthUser authUser, Long id) {
 
         isCommentOwner(authUser.getId(), id);

@@ -9,7 +9,6 @@ import io.rednotice.workspace.response.WorkSpaceNameResponse;
 import io.rednotice.workspace.response.WorkSpaceResponse;
 import io.rednotice.workspace.service.WorkSpaceService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,10 +33,9 @@ public class WorkSpaceController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id) {
 
-        return ApiResponse.ok(workSpaceService.findWorkspaceById(authUser, id));
+        return ApiResponse.ok(workSpaceService.findWorkspace(authUser, id));
     }
 
-    // Security 추가 후 해당 유저의 워크스페이스만 수정되도록 변경 예정
     @PatchMapping("/workspaces/{id}")
     public ApiResponse<WorkSpaceResponse> updateWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
