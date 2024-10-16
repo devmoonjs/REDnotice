@@ -5,6 +5,7 @@ import io.rednotice.board.repository.BoardRepository;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
+import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.list.entity.Lists;
@@ -12,7 +13,10 @@ import io.rednotice.list.repository.ListsRepository;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
+import io.rednotice.member.entity.Member;
+import io.rednotice.member.repository.MemberRepository;
 import io.rednotice.workspace.entity.WorkSpace;
+import io.rednotice.workspace.enums.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +30,12 @@ import java.util.stream.Collectors;
 public class ListsService {
     private final ListsRepository listsRepository;
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public ListsResponse saveLists(ListsSaveRequest request) {
+    public ListsResponse saveLists(AuthUser authUser, ListsSaveRequest request) {
+        checkMemberRole(authUser.getId(), request.getWorkSpaceId());
+
         Board board = findBoardById(request.getBoardId());
         Lists lists = listsRepository.save(new Lists(request, board));
 
@@ -74,5 +81,13 @@ public class ListsService {
         return boardRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
         );
+    }
+
+    private void checkMemberRole(Long userId, Long workSpaceId) {
+        // 읽기 전용 역할인 경우 예외 발생
+        Member member = memberRepository.getMember(userId, workSpaceId);
+        if (member.getMemberRole().equals(MemberRole.READ)) {
+            throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
+        }
     }
 }

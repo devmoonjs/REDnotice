@@ -1,11 +1,13 @@
 package io.rednotice.list.controller;
 
+import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.ApiResponse;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
 import io.rednotice.list.service.ListsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +20,9 @@ public class ListsController {
 
     // 리스트 생성
     @PostMapping("/lists")
-    private ApiResponse<ListsResponse> saveList(@RequestBody ListsSaveRequest request) {
-        ListsResponse response = listsService.saveLists(request);
+    private ApiResponse<ListsResponse> saveList(@AuthenticationPrincipal AuthUser authUser,
+                                                @RequestBody ListsSaveRequest request) {
+        ListsResponse response = listsService.saveLists(authUser,request);
         return ApiResponse.ok(response);
     }
 

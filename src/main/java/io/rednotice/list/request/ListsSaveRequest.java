@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ListsSaveRequest {
-    private final String name;
-    private final int sequence;
+    private String name;
+    private int sequence;
+    private Long workSpaceId;
     private Long boardId;
 }
