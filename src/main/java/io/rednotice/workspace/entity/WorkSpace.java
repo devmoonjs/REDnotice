@@ -5,6 +5,7 @@ import io.rednotice.common.Timestamped;
 import io.rednotice.member.entity.Member;
 import io.rednotice.user.entity.User;
 import io.rednotice.workspace.request.WorkSpaceSaveRequest;
+import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,11 +42,13 @@ public class WorkSpace extends Timestamped {
         this.user = user;
     }
 
-    public void changeName(String name) {
-        this.name = name;
-    }
+    public void updateWorkspace(WorkSpaceUpdateRequest request) {
+        if (request.getName() != null) {
+            this.name = request.getName();
+        }
 
-    public void changeDescription(String description) {
-        this.description = description;
+        if (request.getDescription() != null) {
+            this.description = request.getDescription();
+        }
     }
 }
