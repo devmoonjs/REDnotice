@@ -1,6 +1,7 @@
 package io.rednotice.workspace.controller;
 
 import io.rednotice.common.AuthUser;
+import io.rednotice.common.apipayload.ApiResponse;
 import io.rednotice.workspace.request.AddMemberRequest;
 import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
 import io.rednotice.workspace.response.WorkSpaceNameResponse;
@@ -21,50 +22,50 @@ public class WorkSpaceController {
     private final WorkSpaceService workSpaceService;
 
     @GetMapping("/workspaces")
-    public ResponseEntity<List<WorkSpaceNameResponse>> findWorkSpaces(
+    public ApiResponse<List<WorkSpaceNameResponse>> findWorkSpaces(
             @AuthenticationPrincipal AuthUser authUser) {
 
-        return ResponseEntity.ok(workSpaceService.findWorkSpaces(authUser));
+        return ApiResponse.ok(workSpaceService.findWorkSpaces(authUser));
     }
 
     @GetMapping("/workspaces/{id}")
-    public ResponseEntity<WorkSpaceResponse> findWorkSpace(
+    public ApiResponse<WorkSpaceResponse> findWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(workSpaceService.findWorkspaceById(authUser, id));
+        return ApiResponse.ok(workSpaceService.findWorkspaceById(authUser, id));
     }
 
     // Security 추가 후 해당 유저의 워크스페이스만 수정되도록 변경 예정
     @PatchMapping("/workspaces/{id}")
-    public ResponseEntity<WorkSpaceResponse> updateWorkSpace(
+    public ApiResponse<WorkSpaceResponse> updateWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id,
             @RequestBody WorkSpaceUpdateRequest request) {
 
         WorkSpaceResponse response = workSpaceService.updateWorkSpace(authUser, id, request);
 
-        return ResponseEntity.ok(response);
+        return ApiResponse.ok(response);
     }
 
     @PostMapping("/workspaces/{id}/invite")
-    public ResponseEntity<String> addMember(
+    public ApiResponse<String> addMember(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id,
             @RequestBody AddMemberRequest request) {
 
         workSpaceService.addMember(authUser, id, request);
 
-        return ResponseEntity.ok("멤버가 추가되었습니다.");
+        return ApiResponse.ok("멤버가 추가되었습니다.");
     }
 
     @DeleteMapping("/workspaces/{id}")
-    public ResponseEntity<String> deleteWorkSpace(
+    public ApiResponse<String> deleteWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id) {
 
         workSpaceService.deleteWorkSpace(authUser, id);
 
-        return ResponseEntity.ok("워크스페이스가 삭제되었습니다.");
+        return ApiResponse.ok("워크스페이스가 삭제되었습니다.");
     }
 }
