@@ -55,7 +55,6 @@ public class CardQueryDslRepositoryImpl implements CardQueryDslRepository {
                         managerNameIsEq(managerName),
                         boardIdIsEq(boardId)
                 )
-                .groupBy(card.id)
                 .orderBy(card.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -77,23 +76,24 @@ public class CardQueryDslRepositoryImpl implements CardQueryDslRepository {
 
 
     private BooleanExpression titleContains(String title) {
-        return StringUtils.hasText(title) ? card.title.contains(title) : null;
+        return StringUtils.hasText(title) ? card.title.contains(title) : card.title.isNotNull();
     }
 
     private BooleanExpression descriptionContains(String description) {
-        return StringUtils.hasText(description) ? card.description.contains(description) : null;
+        return StringUtils.hasText(description) ? card.description.contains(description) : card.description.isNotNull();
     }
 
     private BooleanExpression dueDateIsEq(LocalDate dueDate) {
-        return dueDate != null ? card.dueDate.eq(dueDate) : null;
+        return dueDate != null ? card.dueDate.eq(dueDate) : card.dueDate.isNotNull();
     }
 
     private BooleanExpression managerNameIsEq(String managerName) {
-        return StringUtils.hasText(managerName) ? card.manager.username.eq(managerName) : null;
+        return StringUtils.hasText(managerName) ? card.manager.username.eq(managerName) : card.manager.username.isNotNull();
     }
 
     private BooleanExpression boardIdIsEq(Long boardId) {
-        return card.board != null ? card.board.id.eq(boardId) : null;
+        return boardId != null ? card.board.id.eq(boardId) : card.board.id.isNotNull();
     }
+
 
 }
