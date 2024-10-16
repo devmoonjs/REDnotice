@@ -7,16 +7,18 @@ import io.rednotice.auth.request.SignupRequest;
 import io.rednotice.auth.response.SignupResponse;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
-import io.rednotice.config.JwtUtil;
-import io.rednotice.config.PasswordEncoders;
+import io.rednotice.common.utils.JwtUtil;
+
 import io.rednotice.user.entity.User;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.enums.UserStatus;
 import io.rednotice.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -24,13 +26,14 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoders passwordEncoders;
+
+    private final BCryptPasswordEncoder passwordEncoders;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
 
     @Transactional
-    public SignupResponse createUser(@Valid SignupRequest signupRequest) {
+    public SignupResponse createUser(SignupRequest signupRequest) {
 
          String encodedPassword = passwordEncoders.encode(signupRequest.getPassword());
 
@@ -57,7 +60,7 @@ public class AuthService {
 
     }
 
-    public String login(@Valid LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));

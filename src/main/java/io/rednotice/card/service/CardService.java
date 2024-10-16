@@ -121,4 +121,9 @@ public class CardService {
             throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
         }
     }
+
+    public Card getCardId(Long cardId) {
+        return cardRepository.getCardById(cardId);
+    }
+
 }

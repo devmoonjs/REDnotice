@@ -23,7 +23,7 @@ public class Attachment extends Timestamped {
 
     private String fileType;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
