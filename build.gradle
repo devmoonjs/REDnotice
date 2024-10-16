@@ -33,17 +33,15 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // bcrypt (토큰)
-    implementation 'at.favre.lib:bcrypt:0.10.2'
-
-
 
     // jwt
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
     //aws s3
     implementation 'software.amazon.awssdk:s3:2.20.0'
 

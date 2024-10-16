@@ -1,4 +1,4 @@
-package io.rednotice.config;
+package io.rednotice.common.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
-public class S3ServiceUtility {
+public class S3ServiceUtil {
 
     private final S3Client s3Client;
 
