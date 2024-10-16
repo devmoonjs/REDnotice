@@ -7,9 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class BoardUpdateRequest {
-    @Nullable
     private String title;
-
-    @Nullable
     private String color;
+    private Long workSpaceId;
 }

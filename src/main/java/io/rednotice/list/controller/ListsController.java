@@ -1,7 +1,9 @@
 package io.rednotice.list.controller;
 
+import io.rednotice.card.dto.request.CardDeleteRequest;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.ApiResponse;
+import io.rednotice.list.request.ListDeleteRequest;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
@@ -40,14 +42,16 @@ public class ListsController {
 
     // 리스트 수정
     @PatchMapping("/lists/{listId}")
-    private ApiResponse<ListsResponse> updateList(@PathVariable Long listId, @RequestBody ListsUpdateRequest request) {
-        return ApiResponse.ok(listsService.updateLists(listId, request));
+    private ApiResponse<ListsResponse> updateList(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long listId, @RequestBody ListsUpdateRequest request) {
+        return ApiResponse.ok(listsService.updateLists(authUser, listId, request));
     }
 
     // 리스트 삭제
     @DeleteMapping("/lists/{listId}")
-    private ApiResponse<String> deleteList(@PathVariable Long listId) {
-        listsService.deleteList(listId);
+    private ApiResponse<String> deleteList(@AuthenticationPrincipal AuthUser authUser,
+                                           @PathVariable Long listId,
+                                           @RequestBody ListDeleteRequest listDeleteRequest) {
+        listsService.deleteList(authUser,listId,listDeleteRequest);
         return ApiResponse.ok("리스트가 정상적으로 삭제되었습니다.");
     }
 }

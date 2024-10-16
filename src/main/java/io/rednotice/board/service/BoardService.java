@@ -47,35 +47,30 @@ public class BoardService {
     }
 
     public BoardResponse findById(Long id) {
-        return BoardResponse.of(findBoardById(id));
+        return BoardResponse.of(boardRepository.findBoardById(id));
     }
 
 
     @Transactional
-    public BoardResponse updateBoard(Long id, BoardUpdateRequest request) {
-        Board board = findBoardById(id);
+    public BoardResponse updateBoard(AuthUser authUser,Long boardId, BoardUpdateRequest updateRequest) {
+        checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
+        Board board = boardRepository.findBoardById(boardId);
 
-        if (request.getTitle() != null && request.getTitle().isEmpty()) {
-            board.changeTitle(request.getTitle());
+        if (updateRequest.getTitle() != null && updateRequest.getTitle().isEmpty()) {
+            board.changeTitle(updateRequest.getTitle());
         }
 
-        if (request.getColor() != null) {
-            board.changeColor(request.getColor());
+        if (updateRequest.getColor() != null) {
+            board.changeColor(updateRequest.getColor());
         }
 
         return BoardResponse.of(board);
     }
 
     @Transactional
-    public void deleteBoard(AuthUser authuser, Long id, BoardDeleteRequest request) {
-        checkMemberRole(authuser.getId(), request.getWorkSpaceId());
+    public void deleteBoard(AuthUser authuser, Long id, BoardDeleteRequest boardDeleteRequest) {
+        checkMemberRole(authuser.getId(), boardDeleteRequest.getWorkSpaceId());
         boardRepository.deleteById(id);
-    }
-
-    private Board findBoardById(Long id) {
-        return boardRepository.findById(id).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
-        );
     }
 
     private WorkSpace findWorkSpaceById(Long id) {

@@ -10,6 +10,7 @@ import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.list.entity.Lists;
 import io.rednotice.list.repository.ListsRepository;
+import io.rednotice.list.request.ListDeleteRequest;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
@@ -53,21 +54,24 @@ public class ListsService {
     }
 
     @Transactional
-    public ListsResponse updateLists(Long id, ListsUpdateRequest request) {
+    public ListsResponse updateLists(AuthUser authUser, Long id, ListsUpdateRequest updateRequest) {
+        checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
         Lists lists = findListById(id);
 
-        if (request.getName() != null && request.getName().isEmpty()) {
-            lists.changeName(request.getName());
+        if (updateRequest.getName() != null && updateRequest.getName().isEmpty()) {
+            lists.changeName(updateRequest.getName());
         }
 
-        if (request.getSequence() != 0) {
-            lists.changeSequence(request.getSequence());
+        if (updateRequest.getSequence() != 0) {
+            lists.changeSequence(updateRequest.getSequence());
         }
 
         return ListsResponse.of(lists);
     }
 
-    public void deleteList(Long id) {
+    @Transactional
+    public void deleteList(AuthUser authUser, Long id, ListDeleteRequest deleteRequest) {
+        checkMemberRole(authUser.getId(), deleteRequest.getWorkSpaceId());
         listsRepository.deleteById(id);
     }
 

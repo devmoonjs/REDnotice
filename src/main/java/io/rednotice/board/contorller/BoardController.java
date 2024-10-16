@@ -43,8 +43,10 @@ public class BoardController {
 
     // 보드 내용(color, title) 업데이트
     @PatchMapping("/boards/{boardId}")
-    public ApiResponse<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardUpdateRequest request) {
-        return ApiResponse.ok(boardService.updateBoard(boardId, request));
+    public ApiResponse<BoardResponse> updateBoard(@AuthenticationPrincipal AuthUser authUser,
+                                                  @PathVariable Long boardId,
+                                                  @RequestBody BoardUpdateRequest boardUpdateRequest) {
+        return ApiResponse.ok(boardService.updateBoard(authUser, boardId, boardUpdateRequest));
     }
 
     //보드 삭제
