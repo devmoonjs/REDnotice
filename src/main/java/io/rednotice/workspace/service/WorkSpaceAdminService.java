@@ -5,8 +5,10 @@ import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
+import io.rednotice.member.service.MemberService;
 import io.rednotice.user.entity.User;
 import io.rednotice.user.repository.UserRepository;
+import io.rednotice.user.service.UserService;
 import io.rednotice.workspace.entity.WorkSpace;
 import io.rednotice.workspace.enums.MemberRole;
 import io.rednotice.workspace.repository.WorkSpaceRepository;
@@ -22,25 +24,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class WorkSpaceAdminService {
 
-    private final UserRepository userRepository;
     private final WorkSpaceRepository workSpaceRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final UserService userService;
 
     @Transactional
     public WorkSpaceResponse saveWorkSpace(AuthUser authUser, WorkSpaceSaveRequest request) {
-
-        User user = userRepository.findById(authUser.getId()).orElseThrow();
+        User user = userService.getUser(authUser.getId());
         WorkSpace workspace = workSpaceRepository.save(new WorkSpace(request, user));
 
-        memberRepository.save(new Member(user, workspace, MemberRole.MANAGE));
+        Member member = new Member(user, workspace, MemberRole.MANAGE);
+        memberService.saveMember(member);
 
         return WorkSpaceResponse.of(workspace);
     }
 
     @Transactional
     public void changeMemberRole(Long workSpaceId, Long memberId, ChangeMemberRoleRequest request) {
-
-        Member member = memberRepository.getMember(memberId, workSpaceId);
+        Member member = memberService.getMember(memberId, workSpaceId);
         member.changeRole(request.getMemberRole());
     }
 }
