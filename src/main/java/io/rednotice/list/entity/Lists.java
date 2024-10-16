@@ -1,10 +1,14 @@
 package io.rednotice.list.entity;
 
 import io.rednotice.board.entity.Board;
+import io.rednotice.card.entity.Card;
 import io.rednotice.list.request.ListsSaveRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -20,6 +24,9 @@ public class Lists {
 
     @Column(length = 20)
     private String name;
+
+    @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Card> cardList = new ArrayList<>();
 
     // Integer는 null이 되니까, int로 하자(이유 - 입력 없으면 null대신 0을 뱉는다.)
     @Column(unique = true)

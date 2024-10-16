@@ -5,9 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ListsSaveRequest {
-    private String name;
-    private int sequence;
+public class ListDeleteRequest {
     private Long workSpaceId;
-    private Long boardId;
 }

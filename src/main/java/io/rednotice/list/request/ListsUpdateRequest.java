@@ -9,4 +9,5 @@ import lombok.Getter;
 public class ListsUpdateRequest {
     private String name;
     private int sequence;
+    private Long workSpaceId;
 }
