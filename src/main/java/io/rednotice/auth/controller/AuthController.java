@@ -6,6 +6,7 @@ import io.rednotice.auth.request.SignupRequest;
 import io.rednotice.auth.response.SignupResponse;
 import io.rednotice.auth.service.AuthService;
 import io.rednotice.common.AuthUser;
+import io.rednotice.common.apipayload.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createUser(signupRequest));
+    public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+        return ApiResponse.ok(authService.createUser(signupRequest));
     }
 
     @PostMapping("/login")
@@ -31,7 +32,7 @@ public class AuthController {
     }
 
     @PutMapping("/signout")
-    public ResponseEntity<Long> deleteUser(@AuthenticationPrincipal AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal AuthUser authUser, @RequestBody SignoutRequest signoutRequest) {
         Long id = authUser.getId();
         authService.deleteUser(id, signoutRequest);
         return ResponseEntity.noContent().build();
