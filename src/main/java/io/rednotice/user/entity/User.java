@@ -4,6 +4,7 @@ import io.rednotice.common.Timestamped;
 import io.rednotice.member.entity.Member;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.user.enums.UserStatus;
+import io.rednotice.workspace.entity.WorkSpace;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,9 @@ public class User extends Timestamped {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Member> memberList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<WorkSpace> workSpaceList = new ArrayList<>();
 
     public User(String username, String email, String password, UserRole userRole) {
         this.username = username;

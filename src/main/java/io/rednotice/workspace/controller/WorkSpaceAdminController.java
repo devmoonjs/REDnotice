@@ -1,6 +1,7 @@
 package io.rednotice.workspace.controller;
 
 import io.rednotice.common.AuthUser;
+import io.rednotice.common.apipayload.ApiResponse;
 import io.rednotice.user.enums.UserRole;
 import io.rednotice.workspace.request.ChangeMemberRoleRequest;
 import io.rednotice.workspace.request.WorkSpaceSaveRequest;
@@ -23,24 +24,24 @@ public class WorkSpaceAdminController {
 
     @Secured(UserRole.Authority.ADMIN)
     @PostMapping("/workspaces")
-    public ResponseEntity<WorkSpaceResponse> saveWorkSpace(
+    public ApiResponse<WorkSpaceResponse> saveWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody WorkSpaceSaveRequest request) {
 
         WorkSpaceResponse response = workSpaceAdminService.saveWorkSpace(authUser, request);
 
-        return ResponseEntity.ok(response);
+        return ApiResponse.ok(response);
     }
 
     @Secured(UserRole.Authority.ADMIN)
     @PatchMapping("/workspaces/{workSpaceId}/members/{memberId}/role")
-    public ResponseEntity<String> changeMemberRole(
+    public ApiResponse<String> changeMemberRole(
             @PathVariable Long workSpaceId,
             @PathVariable Long memberId,
             @RequestBody ChangeMemberRoleRequest request) {
 
         workSpaceAdminService.changeMemberRole(workSpaceId, memberId, request);
 
-        return ResponseEntity.ok("권한 변경되었습니다.");
+        return ApiResponse.ok("권한 변경되었습니다.");
     }
 }

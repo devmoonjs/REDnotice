@@ -4,6 +4,7 @@ import io.rednotice.board.entity.Board;
 import io.rednotice.common.Timestamped;
 import io.rednotice.list.entity.Lists;
 import io.rednotice.user.entity.User;
+import io.rednotice.workspace.entity.WorkSpace;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,10 @@ public class Card extends Timestamped {
     private int views;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspace_id", nullable = false)
+    private WorkSpace workspace;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
@@ -54,11 +59,12 @@ public class Card extends Timestamped {
     @JoinColumn(referencedColumnName = "id", name = "manager_id", nullable = false)
     private User manager;
 
-    public Card(String title, String description, LocalDate dueDate, int seq, Board board, Lists list, User user) {
+    public Card(String title, String description, LocalDate dueDate, int seq, WorkSpace workspace, Board board, Lists list, User user) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.seq = seq;
+        this.workspace = workspace;
         this.board = board;
         this.list = list;
         this.user = user;
@@ -75,14 +81,6 @@ public class Card extends Timestamped {
         if (dueDate != null) {
             this.dueDate = dueDate;
         }
-    }
-
-    public void changeSeq(int seq) {
-        this.seq = seq;
-    }
-
-    public void updateViews(int views){
-        this.views = views;
     }
 
     public void changeManager(User user) {

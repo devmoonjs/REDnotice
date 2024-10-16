@@ -2,10 +2,11 @@ package io.rednotice.auth.service;
 
 
 import io.rednotice.auth.request.LoginRequest;
-
 import io.rednotice.auth.request.SignoutRequest;
 import io.rednotice.auth.request.SignupRequest;
 import io.rednotice.auth.response.SignupResponse;
+import io.rednotice.common.apipayload.status.ErrorStatus;
+import io.rednotice.common.exception.ApiException;
 import io.rednotice.config.JwtUtil;
 import io.rednotice.config.PasswordEncoders;
 import io.rednotice.user.entity.User;
@@ -16,8 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -33,18 +32,18 @@ public class AuthService {
     @Transactional
     public SignupResponse createUser(@Valid SignupRequest signupRequest) {
 
-        String encodedPassword = passwordEncoders.encode(signupRequest.getPassword());
+         String encodedPassword = passwordEncoders.encode(signupRequest.getPassword());
 
         Optional<User> existingUser = userRepository.findByEmail(signupRequest.getEmail());
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new ApiException(ErrorStatus._INVALID_REQUEST);
         }
 
         User user = new User(
                 signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 encodedPassword,
-                signupRequest.getRole()
+                UserRole.of(signupRequest.getRole())
         );
 
         User savedUser = userRepository.save(user);
@@ -60,14 +59,15 @@ public class AuthService {
 
     public String login(@Valid LoginRequest loginRequest) {
 
-        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->new NoSuchElementException("User not found"));
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         if(!passwordEncoders.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Wrong password");
+            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
 
         if(user.getStatus() == UserStatus.WITHDRAWAL){
-            throw new IllegalArgumentException("User is withdrawal");
+            throw new ApiException(ErrorStatus._NOT_FOUND_USER);
         }
 
         return jwtUtil.createToken(
@@ -76,16 +76,17 @@ public class AuthService {
                 user.getUserRole()
         );
     }
+
     @Transactional
     public void deleteUser(Long id, SignoutRequest signoutRequest) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() ->new NoSuchElementException("User not found"));
+                .orElseThrow(() ->new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         if(passwordEncoders.matches(signoutRequest.getPassword(), user.getPassword())){
             user.update();
             userRepository.save(user);
-        } else throw new IllegalArgumentException("Wrong password");
+        } else throw new ApiException(ErrorStatus._PERMISSION_DENIED);
     }
 }
 

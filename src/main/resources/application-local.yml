@@ -5,6 +5,12 @@ spring:
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,3 +20,17 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
+
+
+#cloud:
+#  aws:
+#    s3:
+#      bucket: rednotice-sample
+#    credentials:
+#      access-key: ${S3_ACCESS_KEY}
+#      secret-key: ${S3_SECRET_KEY}
+#    region:
+#      static: eu-north-1
+#      auto: true
+#    stack:
+#      auto: false

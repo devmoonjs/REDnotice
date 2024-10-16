@@ -32,7 +32,7 @@ public class WorkSpaceService {
 
     public List<WorkSpaceNameResponse> findWorkSpaces(AuthUser authUser) {
 
-        User user = findUserByAuthUser(authUser);
+        User user = userRepository.getUserById(authUser.getId());
 
         List<Long> workSpaceIdList = memberRepository.findWorkspaceByUser(user);
         List<String> workSpaceList = workSpaceRepository.findByIdList(workSpaceIdList);
@@ -44,10 +44,7 @@ public class WorkSpaceService {
 
     public WorkSpaceResponse findWorkspaceById(AuthUser authUser, Long id) {
 
-        User user = findUserByAuthUser(authUser);
-        WorkSpace workSpace = findWorkSpaceById(id);
-
-        isMember(user, workSpace);
+        isMember(authUser.getId(), id);
 
         return WorkSpaceResponse.of(findWorkSpaceById(id));
     }
@@ -55,58 +52,44 @@ public class WorkSpaceService {
     @Transactional
     public WorkSpaceResponse updateWorkSpace(AuthUser authUser, Long id, WorkSpaceUpdateRequest request) {
 
-        User user = findUserByAuthUser(authUser);
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
+
         WorkSpace workSpace = findWorkSpaceById(id);
 
-        isMember(user, workSpace);
-        isManage(user, workSpace);
-
-        if (request.getName() != null) {
-            workSpace.changeName(request.getName());
-        }
-
-        if (request.getDescription() != null) {
-            workSpace.changeDescription(request.getDescription());
-        }
+        workSpace.updateWorkspace(request);
 
         return WorkSpaceResponse.of(workSpace);
     }
 
     @Transactional
     public void deleteWorkSpace(AuthUser authUser, Long id) {
-        User user = findUserByAuthUser(authUser);
-        WorkSpace workSpace = findWorkSpaceById(id);
 
-        isManage(user, workSpace);
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
 
         workSpaceRepository.deleteById(id);
     }
 
     @Transactional
     public void addMember(AuthUser authUser, Long id, AddMemberRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
+
+        User newUser = userRepository.getUserByEmail(request.getEmail());
         WorkSpace workSpace = findWorkSpaceById(id);
 
-        User manger = findUserByAuthUser(authUser);
-
-        isManage(manger, workSpace);
-
-        if (memberRepository.findByUserAndWorkspace(user, workSpace).isPresent()) {
+        if (memberRepository.findByUserAndWorkspace(newUser, workSpace).isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
         }
 
-        memberRepository.save(new Member(user, workSpace, MemberRole.of(request.getMemberRole())));
+        memberRepository.save(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
-    private Member isMember(User user, WorkSpace workSpace) {
-        return memberRepository.findByUserAndWorkspace(user, workSpace).orElseThrow(
+    private Member isMember(Long userId, Long workspaceId) {
+        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
                 () -> new ApiException(ErrorStatus._INVALID_REQUEST)
-        );
-    }
-
-    private User findUserByAuthUser(AuthUser authUser) {
-        return userRepository.findById(authUser.getId()).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
 
@@ -116,9 +99,7 @@ public class WorkSpaceService {
         );
     }
 
-    public void isManage(User user, WorkSpace workSpace) {
-        Member member = isMember(user, workSpace);
-
+    public void isManage(Member member) {
         if (member.getMemberRole() != MemberRole.MANAGE) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }
