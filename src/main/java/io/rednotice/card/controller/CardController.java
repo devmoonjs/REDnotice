@@ -8,6 +8,7 @@ import io.rednotice.card.dto.CardSearchDto;
 import io.rednotice.card.service.CardService;
 import io.rednotice.card.dto.request.CardManagerRequest;
 import io.rednotice.common.AuthUser;
+import io.rednotice.common.anotation.SlackNotify;
 import io.rednotice.common.apipayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -17,42 +18,43 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/cards")
+@RequestMapping("/api/v1")
 public class CardController {
     private final CardService cardService;
 
-    @PostMapping
+    @PostMapping("/cards")
     public ApiResponse<CardResponse> saveCard(@AuthenticationPrincipal AuthUser authUser,
                                               @RequestBody CardSaveRequest cardSaveRequest) {
         return ApiResponse.ok(cardService.saveCard(authUser, cardSaveRequest));
     }
 
-    @PostMapping("/{cardId}/managers")
+    @PostMapping("/cards/{cardId}/managers")
     public ApiResponse<CardManagerResponse> addCardManager(@AuthenticationPrincipal AuthUser authUser,
                                                            @PathVariable Long cardId,
                                                            @RequestBody CardManagerRequest cardManagerRequest) {
         return ApiResponse.ok(cardService.changeManager(authUser, cardId, cardManagerRequest));
     }
 
-    @GetMapping
+    @GetMapping("/cards")
     public ApiResponse<Page<CardSearchDto>> searchCards(@ParameterObject CardPageRequest cardPageRequest,
                                                         @ParameterObject CardSearchRequest cardSearchRequest) {
         return ApiResponse.ok(cardService.searchCards(cardPageRequest, cardSearchRequest));
     }
 
-    @GetMapping("/{cardId}")
+    @GetMapping("/cards/{cardId}")
     public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
         return ApiResponse.ok(cardService.getCard(cardId));
     }
 
-    @PatchMapping("/{cardId}")
+    @SlackNotify
+    @PatchMapping("/cards/{cardId}")
     public ApiResponse<CardResponse> updateCard(@AuthenticationPrincipal AuthUser authUser,
                                                 @PathVariable Long cardId,
                                                 @RequestBody CardUpdateRequest cardUpdateRequest) {
         return ApiResponse.ok(cardService.updateCard(authUser, cardId, cardUpdateRequest));
     }
 
-    @DeleteMapping("/{cardId}")
+    @DeleteMapping("/cards/{cardId}")
     public ApiResponse<String> deleteCard(@AuthenticationPrincipal AuthUser authUser,
                                         @PathVariable Long cardId,
                                         @RequestBody CardDeleteRequest cardDeleteRequest) {
