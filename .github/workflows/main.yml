@@ -74,6 +74,7 @@ jobs:
             # 새 컨테이너 실행
             docker run -d --name REDnotice -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
+              -e SLACK_INCOMING_HOOK_URL=${{ secrets.SLACK_INCOMING_HOOK_URL }} \
               -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
               -e S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }} \
               -e S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} \
