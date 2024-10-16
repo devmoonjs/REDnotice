@@ -1,6 +1,7 @@
 package io.rednotice.card.entity;
 
 import io.rednotice.board.entity.Board;
+import io.rednotice.comment.entity.Comment;
 import io.rednotice.common.Timestamped;
 import io.rednotice.list.entity.Lists;
 import io.rednotice.user.entity.User;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Entity
@@ -58,6 +60,9 @@ public class Card extends Timestamped {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "manager_id", nullable = false)
     private User manager;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList;
 
     public Card(String title, String description, LocalDate dueDate, int seq, WorkSpace workspace, Board board, Lists list, User user) {
         this.title = title;
