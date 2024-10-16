@@ -2,9 +2,7 @@ package io.rednotice.card.service;
 
 import io.rednotice.board.entity.Board;
 import io.rednotice.card.dto.request.*;
-import io.rednotice.card.dto.response.CardDetailResponse;
-import io.rednotice.card.dto.response.CardManagerResponse;
-import io.rednotice.card.dto.response.CardResponse;
+import io.rednotice.card.dto.response.*;
 import io.rednotice.card.dto.CardSearchDto;
 import io.rednotice.card.entity.Card;
 import io.rednotice.card.repository.CardRepository;
@@ -16,7 +14,9 @@ import io.rednotice.member.entity.Member;
 import io.rednotice.member.repository.MemberRepository;
 import io.rednotice.user.entity.User;
 import io.rednotice.user.repository.UserRepository;
+import io.rednotice.workspace.entity.WorkSpace;
 import io.rednotice.workspace.enums.MemberRole;
+import io.rednotice.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +34,22 @@ public class CardService {
     private final MemberRepository memberRepository;
 //    private final ListRepository listRepository;
 //    private final BoardRepository boardRepository;
+    private final WorkSpaceRepository workSpaceRepository;
 
+    /**
+     * 1. 댓글기능 접근 시 멤버권한 확인해야함
+     * -> 이걸 위해 WorkSpace id를 객체에 추가함
+     * -> 기능개발 완료 후 AOP로 멤버권한 체크 로직을 분리!
+     * 2. 모든 도메인에서 member role 체크가 있음.
+     * -> 이걸 위해 MemberRepository를 모든 도메인에서 참조
+     * -> 이것도 기능개발 완료 후 AOP 또는 다른방법으로 로직을 분리!
+     */
 
     @Transactional
     public CardResponse saveCard(AuthUser authUser, CardSaveRequest saveRequest) {
         checkMemberRole(authUser.getId(), saveRequest.getWorkSpaceId());
 
+        WorkSpace workSpace = workSpaceRepository.getWorkspaceById(saveRequest.getWorkSpaceId());
         Board board = new Board();  // 임시 Board 객체(repo 구현되면 수정!)
         Lists list = new Lists();   // 임시 Lists 객체(repo 구현되면 수정!)
         User user = userRepository.getUserById(authUser.getId());
@@ -48,6 +58,7 @@ public class CardService {
                 saveRequest.getDescription(),
                 saveRequest.getDueDate(),
                 saveRequest.getSeq(),
+                workSpace,
                 board,
                 list,
                 user
