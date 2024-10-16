@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class WorkSpaceAdminController {
 
-    private final WorkSpaceService workSpaceService;
     private final WorkSpaceAdminService workSpaceAdminService;
 
     @Secured(UserRole.Authority.ADMIN)
