@@ -1,11 +1,14 @@
 package io.rednotice.board.contorller;
 
+import io.rednotice.board.request.BoardDeleteRequest;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
 import io.rednotice.board.service.BoardService;
+import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,8 +49,10 @@ public class BoardController {
 
     //보드 삭제
     @DeleteMapping("/boards/{boardId}")
-    public ApiResponse<String> deleteBoard(@PathVariable Long boardId) {
-        boardService.deleteBoard(boardId);
+    public ApiResponse<String> deleteBoard(@AuthenticationPrincipal AuthUser authUser,
+                                           @PathVariable Long boardId,
+                                           @RequestBody BoardDeleteRequest boardDeleteRequest) {
+        boardService.deleteBoard(authUser, boardId, boardDeleteRequest);
         return ApiResponse.ok("보드가 정상적으로 삭제되었습니다.");
     }
 }
