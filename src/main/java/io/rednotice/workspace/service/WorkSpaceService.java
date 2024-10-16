@@ -80,7 +80,7 @@ public class WorkSpaceService {
         memberService.saveMember(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
-    private WorkSpace getWorkSpace(Long id) {
+    public WorkSpace getWorkSpace(Long id) {
         return workSpaceRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );

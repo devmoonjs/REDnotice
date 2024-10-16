@@ -1,10 +1,7 @@
 package io.rednotice.list.service;
 
 import io.rednotice.board.entity.Board;
-import io.rednotice.board.repository.BoardRepository;
-import io.rednotice.board.request.BoardSaveRequest;
-import io.rednotice.board.request.BoardUpdateRequest;
-import io.rednotice.board.response.BoardResponse;
+import io.rednotice.board.service.BoardService;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
@@ -14,10 +11,7 @@ import io.rednotice.list.request.ListDeleteRequest;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
-import io.rednotice.member.entity.Member;
-import io.rednotice.member.repository.MemberRepository;
-import io.rednotice.workspace.entity.WorkSpace;
-import io.rednotice.workspace.enums.MemberRole;
+import io.rednotice.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +24,14 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ListsService {
     private final ListsRepository listsRepository;
-    private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
+    private final BoardService boardService;
+    private final MemberService memberService;
 
     @Transactional
     public ListsResponse saveLists(AuthUser authUser, ListsSaveRequest request) {
-        checkMemberRole(authUser.getId(), request.getWorkSpaceId());
+        memberService.checkReadAndWrite(authUser.getId(), request.getWorkSpaceId());
 
-        Board board = findBoardById(request.getBoardId());
+        Board board = boardService.getBoardById(request.getBoardId());
         Lists lists = listsRepository.save(new Lists(request, board));
 
         return ListsResponse.of(lists);
@@ -50,13 +44,13 @@ public class ListsService {
     }
 
     public ListsResponse findById(Long id) {
-        return ListsResponse.of(findListById(id));
+        return ListsResponse.of(getListById(id));
     }
 
     @Transactional
     public ListsResponse updateLists(AuthUser authUser, Long id, ListsUpdateRequest updateRequest) {
-        checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
-        Lists lists = findListById(id);
+        memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
+        Lists lists = getListById(id);
 
         if (updateRequest.getName() != null && updateRequest.getName().isEmpty()) {
             lists.changeName(updateRequest.getName());
@@ -71,27 +65,14 @@ public class ListsService {
 
     @Transactional
     public void deleteList(AuthUser authUser, Long id, ListDeleteRequest deleteRequest) {
-        checkMemberRole(authUser.getId(), deleteRequest.getWorkSpaceId());
+        memberService.checkReadAndWrite(authUser.getId(), deleteRequest.getWorkSpaceId());
         listsRepository.deleteById(id);
     }
 
-    private Lists findListById(Long id) {
+    public Lists getListById(Long id) {
         return listsRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_LISTS)
         );
     }
 
-    private Board findBoardById(Long id) {
-        return boardRepository.findById(id).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
-        );
-    }
-
-    private void checkMemberRole(Long userId, Long workSpaceId) {
-        // 읽기 전용 역할인 경우 예외 발생
-        Member member = memberRepository.getMember(userId, workSpaceId);
-        if (member.getMemberRole().equals(MemberRole.READ)) {
-            throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
-        }
-    }
 }
