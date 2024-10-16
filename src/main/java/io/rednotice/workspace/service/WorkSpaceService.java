@@ -42,7 +42,7 @@ public class WorkSpaceService {
                 .collect(Collectors.toList());
     }
 
-    public WorkSpaceResponse findWorkspaceById(AuthUser authUser, Long id) {
+    public WorkSpaceResponse findWorkspace(AuthUser authUser, Long id) {
 
         isMember(authUser.getId(), id);
 
@@ -80,11 +80,15 @@ public class WorkSpaceService {
         User newUser = userRepository.getUserByEmail(request.getEmail());
         WorkSpace workSpace = findWorkSpaceById(id);
 
+        checkDuplicateMember(newUser, workSpace);
+
+        memberRepository.save(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
+    }
+
+    private void checkDuplicateMember(User newUser, WorkSpace workSpace) {
         if (memberRepository.findByUserAndWorkspace(newUser, workSpace).isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
         }
-
-        memberRepository.save(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
     private Member isMember(Long userId, Long workspaceId) {
