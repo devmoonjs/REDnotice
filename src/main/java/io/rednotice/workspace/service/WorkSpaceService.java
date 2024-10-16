@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,10 +45,7 @@ public class WorkSpaceService {
 
     public WorkSpaceResponse findWorkspaceById(AuthUser authUser, Long id) {
 
-        User user = findUserByAuthUser(authUser);
-        WorkSpace workSpace = findWorkSpaceById(id);
-
-        isMember(user, workSpace);
+        isMember(authUser.getId(), id);
 
         return WorkSpaceResponse.of(findWorkSpaceById(id));
     }
@@ -55,11 +53,10 @@ public class WorkSpaceService {
     @Transactional
     public WorkSpaceResponse updateWorkSpace(AuthUser authUser, Long id, WorkSpaceUpdateRequest request) {
 
-        User user = findUserByAuthUser(authUser);
-        WorkSpace workSpace = findWorkSpaceById(id);
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
 
-        isMember(user, workSpace);
-        isManage(user, workSpace);
+        WorkSpace workSpace = findWorkSpaceById(id);
 
         if (request.getName() != null) {
             workSpace.changeName(request.getName());
@@ -74,34 +71,42 @@ public class WorkSpaceService {
 
     @Transactional
     public void deleteWorkSpace(AuthUser authUser, Long id) {
-        User user = findUserByAuthUser(authUser);
-        WorkSpace workSpace = findWorkSpaceById(id);
 
-        isManage(user, workSpace);
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
 
         workSpaceRepository.deleteById(id);
     }
 
     @Transactional
     public void addMember(AuthUser authUser, Long id, AddMemberRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        Member member = isMember(authUser.getId(), id);
+        isManage(member);
+
+        User newUser = userRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
+        );
         WorkSpace workSpace = findWorkSpaceById(id);
 
-        User manger = findUserByAuthUser(authUser);
-
-        isManage(manger, workSpace);
-
-        if (memberRepository.findByUserAndWorkspace(user, workSpace).isPresent()) {
+        if (memberRepository.findByUserAndWorkspace(newUser, workSpace).isPresent()) {
             throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
         }
 
-        memberRepository.save(new Member(user, workSpace, MemberRole.of(request.getMemberRole())));
+        memberRepository.save(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
-    private Member isMember(User user, WorkSpace workSpace) {
-        return memberRepository.findByUserAndWorkspace(user, workSpace).orElseThrow(
-                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
+    private Member isMember(Long userId, Long workspaceId) {
+        Optional<Member> optionalMember = memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId);
+        Member member = optionalMember.orElseThrow(
+                () -> new RuntimeException("asdf")
         );
+
+//
+//        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
+//                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
+//        );
+        return member;
     }
 
     private User findUserByAuthUser(AuthUser authUser) {
@@ -116,9 +121,7 @@ public class WorkSpaceService {
         );
     }
 
-    public void isManage(User user, WorkSpace workSpace) {
-        Member member = isMember(user, workSpace);
-
+    public void isManage(Member member) {
         if (member.getMemberRole() != MemberRole.MANAGE) {
             throw new ApiException(ErrorStatus._PERMISSION_DENIED);
         }

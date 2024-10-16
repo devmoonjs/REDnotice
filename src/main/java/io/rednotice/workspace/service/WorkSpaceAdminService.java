@@ -28,8 +28,9 @@ public class WorkSpaceAdminService {
 
     @Transactional
     public WorkSpaceResponse saveWorkSpace(AuthUser authUser, WorkSpaceSaveRequest request) {
+
         User user = userRepository.findById(authUser.getId()).orElseThrow();
-        WorkSpace workspace = workSpaceRepository.save(new WorkSpace(request));
+        WorkSpace workspace = workSpaceRepository.save(new WorkSpace(request, user));
         memberRepository.save(new Member(user, workspace, MemberRole.MANAGE));
 
         return WorkSpaceResponse.of(workspace);
@@ -37,6 +38,7 @@ public class WorkSpaceAdminService {
 
     @Transactional
     public void changeMemberRole(Long workSpaceId, Long memberId, ChangeMemberRoleRequest request) {
+
         WorkSpace workSpace = findWorkSpaceById(workSpaceId);
         User user = findUserById(memberId);
 
@@ -48,12 +50,14 @@ public class WorkSpaceAdminService {
     }
 
     private User findUserById(Long memberId) {
+
         return userRepository.findById(memberId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
     }
 
     private WorkSpace findWorkSpaceById(Long id) {
+
         return workSpaceRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
