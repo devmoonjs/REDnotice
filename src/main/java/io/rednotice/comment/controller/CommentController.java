@@ -36,5 +36,14 @@ public class CommentController {
         return ApiResponse.ok(commentService.updateComment(authUser, request, id));
     }
 
+    @DeleteMapping("/comments/{id}")
+    public ApiResponse<String> deleteComment(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable Long id
+    ) {
 
+        commentService.deleteComment(authUser, id);
+
+        return ApiResponse.ok("댓글이 삭제 되었습니다.");
+    }
 }
