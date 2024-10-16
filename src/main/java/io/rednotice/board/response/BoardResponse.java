@@ -1,7 +1,6 @@
 package io.rednotice.board.response;
 
 import io.rednotice.board.entity.Board;
-import io.rednotice.list.entity.Lists;
 import io.rednotice.list.response.ListsResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
