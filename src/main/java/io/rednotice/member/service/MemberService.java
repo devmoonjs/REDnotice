@@ -45,9 +45,17 @@ public class MemberService {
         }
     }
 
+    public void checkReadAndWrite(Long userId, Long workSpaceId) {
+        Member member = getMember(userId, workSpaceId);
+        if (member.getMemberRole().equals(MemberRole.READ)) {
+            throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
+        }
+    }
+
     public void checkDuplicateMember(User user, WorkSpace workSpace) {
         memberRepository.findByUserAndWorkspace(user, workSpace).orElseThrow(
                 () -> new ApiException(ErrorStatus._DUPLICATE_MANAGE)
         );
     }
+
 }

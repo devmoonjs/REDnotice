@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long>, CardQueryDslRepository{
 
-    default Card getCardById(Long cardId) {
+    default Card findCardById(Long cardId) {
         return findById(cardId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_CARD)
         );

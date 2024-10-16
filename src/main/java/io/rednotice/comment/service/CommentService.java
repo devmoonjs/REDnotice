@@ -65,7 +65,7 @@ public class CommentService {
 
     public void validRole(Long userId, Long cardId) {
 
-        Card card = cardRepository.getCardById(cardId);
+        Card card = cardRepository.findCardById(cardId);
 
         Member member = memberRepository.findByUserIdAndWorkspaceId(userId, card.getWorkspace().getId()).orElseThrow(
                 () -> new ApiException(ErrorStatus._PERMISSION_DENIED)

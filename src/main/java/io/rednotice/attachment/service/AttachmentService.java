@@ -3,7 +3,6 @@ package io.rednotice.attachment.service;
 import io.rednotice.attachment.entity.Attachment;
 import io.rednotice.attachment.repository.AttachmentRepository;
 import io.rednotice.card.entity.Card;
-import io.rednotice.card.repository.CardRepository;
 import io.rednotice.card.service.CardService;
 import io.rednotice.common.AttachmentValidation;
 import io.rednotice.common.apipayload.status.ErrorStatus;
@@ -29,7 +28,7 @@ public class AttachmentService {
     @Transactional
     public Attachment uploadFile(MultipartFile file, Long cardId) throws ApiException {
 
-        Card card = cardService.getCardId(cardId);
+        Card card = cardService.getCardById(cardId);
 
 
         AttachmentValidation.validationFile(file);
