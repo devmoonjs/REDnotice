@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://rednotice-db.chc6aqwsg4ny.ap-northeast-2.rds.amazonaws.com:3306/rednotice
 
     username: admin
-    password: rednotice!
+    password: ${RDS_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   servlet:
