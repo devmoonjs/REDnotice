@@ -25,7 +25,7 @@ public class Board {
     private WorkSpace workspace;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
-    private List<Lists> lists;
+    private List<Lists> lists = new ArrayList<>();
 
 
     @Column(length = 20)
