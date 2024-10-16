@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,7 +25,7 @@ public class Board {
     private WorkSpace workspace;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
-    private List<Lists> lists;
+    private List<Lists> lists = new ArrayList<>();
 
 
     @Column(length = 20)
