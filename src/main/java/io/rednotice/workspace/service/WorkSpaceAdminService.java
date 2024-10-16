@@ -30,7 +30,7 @@ public class WorkSpaceAdminService {
     public WorkSpaceResponse saveWorkSpace(AuthUser authUser, WorkSpaceSaveRequest request) {
 
         User user = userRepository.findById(authUser.getId()).orElseThrow();
-        WorkSpace workspace = workSpaceRepository.save(new WorkSpace(request));
+        WorkSpace workspace = workSpaceRepository.save(new WorkSpace(request, user));
         memberRepository.save(new Member(user, workspace, MemberRole.MANAGE));
 
         return WorkSpaceResponse.of(workspace);
