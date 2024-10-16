@@ -97,16 +97,9 @@ public class WorkSpaceService {
     }
 
     private Member isMember(Long userId, Long workspaceId) {
-        Optional<Member> optionalMember = memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId);
-        Member member = optionalMember.orElseThrow(
-                () -> new RuntimeException("asdf")
+        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
+                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
         );
-
-//
-//        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
-//                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
-//        );
-        return member;
     }
 
     private User findUserByAuthUser(AuthUser authUser) {

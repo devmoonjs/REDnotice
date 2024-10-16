@@ -1,5 +1,6 @@
 package io.rednotice.common.apipayload;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.rednotice.common.apipayload.status.SuccessStatus;
@@ -18,6 +19,7 @@ public class ApiResponse<T> {
 
     private final String message;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final T data;
 
     public static <T> ApiResponse<T> ok(T data) {
@@ -25,6 +27,6 @@ public class ApiResponse<T> {
     }
 
     public static ApiResponse<String> fail(BaseCode errorCode) {
-        return new ApiResponse<>(false, errorCode.getReasonHttpStatus().getStatusCode(), errorCode.getReasonHttpStatus().getMessage(), "null");
+        return new ApiResponse<>(false, errorCode.getReasonHttpStatus().getStatusCode(), errorCode.getReasonHttpStatus().getMessage(), null);
     }
 }
