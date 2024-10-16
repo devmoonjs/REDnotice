@@ -1,9 +1,7 @@
 package io.rednotice.auth.request;
 
-import io.rednotice.user.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @Getter

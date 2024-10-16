@@ -2,7 +2,6 @@ package io.rednotice.auth.service;
 
 
 import io.rednotice.auth.request.LoginRequest;
-
 import io.rednotice.auth.request.SignoutRequest;
 import io.rednotice.auth.request.SignupRequest;
 import io.rednotice.auth.response.SignupResponse;
@@ -16,11 +15,8 @@ import io.rednotice.user.enums.UserStatus;
 import io.rednotice.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.ErrorMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
