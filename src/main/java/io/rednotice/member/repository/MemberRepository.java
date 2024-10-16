@@ -20,7 +20,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUserIdAndWorkspaceId(Long userId, Long workSpaceId);
 
-    default Member getMember(Long userId, Long workSpaceId) {
+    default Member findMemberByUserIdAndWorkspaceId(Long userId, Long workSpaceId) {
         return findByUserIdAndWorkspaceId(userId, workSpaceId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE));
     }
