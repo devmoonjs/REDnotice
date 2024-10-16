@@ -39,8 +39,10 @@ public class S3ServiceUtility {
             // 업로드된 파일의 URL 반환
             return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
 
-        } catch (S3Exception | IOException e) {
+        } catch (S3Exception e) {
             throw new RuntimeException("파일 업로드 오류 발생", e);
+        } catch(IOException e){
+            throw new RuntimeException("변환 오류 발생", e);
         }
     }
 

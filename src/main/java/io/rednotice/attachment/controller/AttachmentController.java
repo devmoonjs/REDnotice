@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/attachment")
+@RequestMapping("/api/v1/attachments")
 
 public class AttachmentController {
 
@@ -25,12 +26,12 @@ public class AttachmentController {
     public ApiResponse<Attachment> uploadFile(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("cardId") Long cardId) {
+            @RequestParam Long cardId) {
 
-        return ApiResponse.ok(attachmentService.uploadFile(file, cardId));
+        return ApiResponse.ok(attachmentService.uploadFile(file,cardId));
     }
 
-    @GetMapping("/card/{cardId}")
+    @GetMapping("/cards/{cardId}")
     public ApiResponse<List<Attachment>> getAttachments(@PathVariable Long cardId) {
         return ApiResponse.ok(attachmentService.getAttachment(cardId));
     }

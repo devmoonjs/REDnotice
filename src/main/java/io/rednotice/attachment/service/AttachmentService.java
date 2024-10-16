@@ -10,12 +10,15 @@ import io.rednotice.common.exception.ApiException;
 import io.rednotice.config.S3ServiceUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
@@ -24,6 +27,7 @@ public class AttachmentService {
     private final CardRepository cardRepository;
 
 
+    @Transactional
     public Attachment uploadFile(MultipartFile file, Long cardId) throws ApiException {
 
         Card card = cardRepository.findById(cardId)
@@ -46,6 +50,7 @@ public class AttachmentService {
         return attachmentRepository.findByCardId(cardId);
     }
 
+    @Transactional
     public Void deleteAttachment(Long id) {
         Attachment attachment = attachmentRepository.findById(id)
                 .orElseThrow(() -> new ApiException(ErrorStatus._ATTACHMENT_NOT_FOUND));
