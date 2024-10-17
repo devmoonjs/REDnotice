@@ -79,7 +79,7 @@ public class CardService {
         memberService.checkReadAndWrite(authUser.getId(), managerRequest.getWorkSpaceId());
 
         User manager = userService.getUser(managerRequest.getManagerId());
-        Card card = getCardById(cardId);
+        Card card = getCard(cardId);
         card.changeManager(manager);
 
         return new CardManagerResponse(cardId, manager.getId());
@@ -99,7 +99,7 @@ public class CardService {
 
     @Transactional
     public CardDetailResponse getCard(AuthUser authUser, Long cardId) {
-        Card card = getCardById(cardId);
+        Card card = getCard(cardId);
 
         // 유저별 조회 방지를 위한 Redis 키 생성
         String userViewKey = "card:views:" + cardId + ":user:" + authUser.getId();
@@ -146,7 +146,7 @@ public class CardService {
     @Transactional
     public CardResponse updateCard(AuthUser authUser, Long cardId, CardUpdateRequest updateRequest) {
         memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
-        Card card = getCardById(cardId);
+        Card card = getCard(cardId);
         card.updateCard(updateRequest.getTitle(), updateRequest.getDescription(), updateRequest.getDueDate());
         return CardResponse.of(card);
     }
@@ -157,7 +157,7 @@ public class CardService {
         cardRepository.deleteById(cardId);
     }
 
-    public Card getCardById(Long cardId) {
+    public Card getCard(Long cardId) {
         return cardRepository.findCardById(cardId);
     }
 

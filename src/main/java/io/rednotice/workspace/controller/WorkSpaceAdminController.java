@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class WorkSpaceAdminController {
 
     private final WorkSpaceAdminService workSpaceAdminService;
 
     @Secured(UserRole.Authority.ADMIN)
-    @PostMapping("/workspaces")
+    @PostMapping("/workspaces/v1")
     public ApiResponse<WorkSpaceResponse> saveWorkSpace(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody WorkSpaceSaveRequest request) {
@@ -33,7 +33,7 @@ public class WorkSpaceAdminController {
     }
 
     @Secured(UserRole.Authority.ADMIN)
-    @PatchMapping("/workspaces/{workSpaceId}/members/{memberId}/role")
+    @PatchMapping("/workspaces/v1{workSpaceId}/members/{memberId}/role")
     public ApiResponse<String> changeMemberRole(
             @PathVariable Long workSpaceId,
             @PathVariable Long memberId,
