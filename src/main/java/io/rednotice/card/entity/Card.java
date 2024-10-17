@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "card")
-@DynamicInsert
+//@DynamicInsert
 @NoArgsConstructor
 public class Card extends Timestamped {
 
@@ -38,8 +38,8 @@ public class Card extends Timestamped {
     @Column(nullable = false)
     private int seq;
 
-    @ColumnDefault("0")
-    private int views;
+//    @ColumnDefault("0")
+//    private int views;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
@@ -92,8 +92,8 @@ public class Card extends Timestamped {
         this.manager = user;
     }
 
-    // 조회수 업데이트 메서드
-    public void updateViews(int views) {
-        this.views = views;
-    }
+//    // 조회수 업데이트 메서드
+//    public void updateViews(int views) {
+//        this.views = views;
+//    }
 }

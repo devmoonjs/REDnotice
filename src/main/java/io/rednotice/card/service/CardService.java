@@ -19,8 +19,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -33,6 +38,8 @@ public class CardService {
     private final ListsService listsService;
     private final BoardService boardService;
     private final WorkSpaceService workSpaceService;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ZSetOperations<String, Object> zSetOperations;
 
     /**
      * 1. 모든 도메인에서 member role 체크가 있음.
@@ -91,8 +98,15 @@ public class CardService {
     @Transactional
     public CardDetailResponse getCard(Long cardId) {
         Card card = getCardById(cardId);
-        // 조회수 1 증가
-        card.updateViews(card.getViews() + 1);
+
+        // Redis에서 조회수 키 생성
+        String redisKey = "card:views:" + cardId;
+        redisTemplate.opsForValue().increment(redisKey);
+
+        // 인기 카드 랭킹에 추가 (Sorted Set 사용)
+        String rankingKey = "card:ranking";
+        zSetOperations.incrementScore(rankingKey, cardId, 1);
+
         return CardDetailResponse.of(card);
     }
 
