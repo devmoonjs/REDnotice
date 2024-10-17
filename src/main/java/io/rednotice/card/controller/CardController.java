@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -44,6 +46,11 @@ public class CardController {
     @GetMapping("/cards/{cardId}")
     public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
         return ApiResponse.ok(cardService.getCard(cardId));
+    }
+
+    @GetMapping("/cards/top10")
+    public ApiResponse<List<CardResponse>> getTopRankedCards() {
+        return ApiResponse.ok(cardService.getTopRankedCards());
     }
 
     @SlackNotify

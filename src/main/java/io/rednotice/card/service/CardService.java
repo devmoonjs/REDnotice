@@ -110,6 +110,19 @@ public class CardService {
         return CardDetailResponse.of(card);
     }
 
+    // 인기 카드 조회 (Top 10)
+    public List<CardResponse> getTopRankedCards() {
+        // 상위 10개의 카드 ID를 가져옴
+        String rankingKey = "card:ranking";
+        List<Long> cardIdList = Objects.requireNonNull(zSetOperations.reverseRange(rankingKey, 0, 9)).stream()
+                .map(cardId -> Long.parseLong(cardId.toString()))
+                .toList();
+
+        return cardRepository.findCardsByIds(cardIdList).stream()
+                .map(CardResponse::of)
+                .toList();
+    }
+
     @Transactional
     public CardResponse updateCard(AuthUser authUser, Long cardId, CardUpdateRequest updateRequest) {
         memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
