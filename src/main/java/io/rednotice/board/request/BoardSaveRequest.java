@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BoardSaveRequest {
     private final String title;
-    private final String color;
     private Long workspaceId;
+    private final String color;
 }

@@ -27,6 +27,8 @@ public class ListsService {
     private final BoardService boardService;
     private final MemberService memberService;
 
+    public static int count;
+
     @Transactional
     public ListsResponse saveLists(AuthUser authUser, ListsSaveRequest request) {
         memberService.checkReadAndWrite(authUser.getId(), request.getWorkSpaceId());
@@ -98,6 +100,54 @@ public class ListsService {
         updatedList.changeSequence(newSequence);
     }
 
+    @Transactional
+    public ListsResponse updateListsWithPessimisticLock(AuthUser authUser, Long id, ListsUpdateRequest updateRequest) {
+        memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
+
+        // 비관적 락을 사용하여 리스트를 조회
+        Lists lists = listsRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_LISTS));
+
+        if (updateRequest.getName() != null && !updateRequest.getName().isEmpty()) {
+            lists.changeName(updateRequest.getName());
+        } else {
+            throw new IllegalArgumentException("리스트 제목은 반드시 입력해야 합니다.");
+        }
+
+        if (updateRequest.getSequence() > 0 && updateRequest.getSequence() != lists.getSequence()) {
+            lists.changeSequence(updateRequest.getSequence());
+        }
+
+        count++;
+        return ListsResponse.of(lists);
+    }
+
+    @Transactional
+    public ListsResponse updateList(AuthUser authUser, Long id, ListsUpdateRequest updateRequest) {
+        memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
+
+        // 비관적 락을 사용하여 리스트를 조회
+        Lists lists = listsRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_LISTS));
+
+        if (updateRequest.getName() != null && !updateRequest.getName().isEmpty()) {
+            lists.changeName(updateRequest.getName());
+        } else {
+            throw new IllegalArgumentException("리스트 제목은 반드시 입력해야 합니다.");
+        }
+
+        if (updateRequest.getSequence() > 0 && updateRequest.getSequence() != lists.getSequence()) {
+            lists.changeSequence(updateRequest.getSequence());
+        }
+
+        count++;
+        return ListsResponse.of(lists);
+    }
+
+    ///
+
+    ///
+
 
 
     @Transactional
@@ -111,4 +161,26 @@ public class ListsService {
                 () -> new ApiException(ErrorStatus._NOT_FOUND_LISTS)
         );
     }
+
+//. 비관적 락 동시성 제어 테스트용
+//    public static void set(int i){
+//        count = i;
+//    }
+//
+//    public static int getCount(){
+//        return count;
+//    }
+
+    @Transactional
+    public void lockListAndHold(Long id) throws InterruptedException {
+        // 비관적 락을 사용하여 리스트를 조회
+        Lists lists = listsRepository.findById(id)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_LISTS));
+
+        // 일정 시간 동안 트랜잭션을 유지
+        System.out.println("리스트를 비관적 락으로 잠금. 잠금 유지 중...");
+        Thread.sleep(5000); // 5초 동안 트랜잭션 유지 (예시)
+        System.out.println("비관적 락 해제");
+    }
+
 }
