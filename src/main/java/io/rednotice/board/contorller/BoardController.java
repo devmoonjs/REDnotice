@@ -16,12 +16,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
 
     // 보드 생성
-    @PostMapping("/boards")
+    @PostMapping("/v1")
     public ApiResponse<BoardResponse> saveBoard(@RequestBody BoardSaveRequest request) {
         BoardResponse response = boardService.saveBoard(request);
 
@@ -29,21 +29,21 @@ public class BoardController {
     }
 
     // 보드 다건 조회
-    @GetMapping("/boards")
+    @GetMapping("/v1")
     public ApiResponse<List<BoardResponse>> searchBoards() {
 
         return ApiResponse.ok(boardService.searchBoards());
     }
 
     // 보드 단건 조회
-    @GetMapping("/boards/{boardId}")
+    @GetMapping("/v1/{boardId}")
     public ApiResponse<BoardSingleResponse> getBoard(@PathVariable Long boardId) {
 
         return ApiResponse.ok(boardService.getBoardId(boardId));
     }
 
     // 보드 내용(color, title) 업데이트
-    @PatchMapping("/boards/{boardId}")
+    @PatchMapping("/v1/{boardId}")
     public ApiResponse<BoardResponse> updateBoard(@AuthenticationPrincipal AuthUser authUser,
                                                   @PathVariable Long boardId,
                                                   @RequestBody BoardUpdateRequest boardUpdateRequest) {
@@ -51,7 +51,7 @@ public class BoardController {
     }
 
     //보드 삭제
-    @DeleteMapping("/boards/{boardId}")
+    @DeleteMapping("/v1/{boardId}")
     public ApiResponse<String> deleteBoard(@AuthenticationPrincipal AuthUser authUser,
                                            @PathVariable Long boardId,
                                            @RequestBody BoardDeleteRequest boardDeleteRequest) {
