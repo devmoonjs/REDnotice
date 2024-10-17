@@ -17,7 +17,6 @@ public class CardResponse {
     private final String description;
     private final LocalDate dueDate;
     private final int seq;
-    private final int views;
     private final UserDto userDto;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
@@ -29,7 +28,6 @@ public class CardResponse {
                 card.getDescription(),
                 card.getDueDate(),
                 card.getSeq(),
-                card.getViews(),
                 new UserDto(card.getUser().getId(), card.getUser().getEmail(), card.getUser().getUsername()),
                 card.getCreatedAt(),
                 card.getModifiedAt()
