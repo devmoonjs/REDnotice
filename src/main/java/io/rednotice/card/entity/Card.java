@@ -38,9 +38,6 @@ public class Card extends Timestamped {
     @Column(nullable = false)
     private int seq;
 
-//    @ColumnDefault("0")
-//    private int views;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id", nullable = false)
     private WorkSpace workspace;
@@ -57,7 +54,7 @@ public class Card extends Timestamped {
     @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id", name = "manager_id", nullable = false)
     private User manager;
 
@@ -92,8 +89,4 @@ public class Card extends Timestamped {
         this.manager = user;
     }
 
-//    // 조회수 업데이트 메서드
-//    public void updateViews(int views) {
-//        this.views = views;
-//    }
 }
