@@ -1,4 +1,4 @@
-package io.rednotice.card.controller;
+package io.rednotice.card.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
