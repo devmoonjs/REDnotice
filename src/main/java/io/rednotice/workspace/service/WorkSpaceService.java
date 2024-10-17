@@ -4,9 +4,9 @@ import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.entity.Member;
-import io.rednotice.member.repository.MemberRepository;
+import io.rednotice.member.service.MemberService;
 import io.rednotice.user.entity.User;
-import io.rednotice.user.repository.UserRepository;
+import io.rednotice.user.service.UserService;
 import io.rednotice.workspace.entity.WorkSpace;
 import io.rednotice.workspace.enums.MemberRole;
 import io.rednotice.workspace.repository.WorkSpaceRepository;
@@ -17,6 +17,7 @@ import io.rednotice.workspace.response.WorkSpaceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,14 +28,14 @@ import java.util.stream.Collectors;
 public class WorkSpaceService {
 
     private final WorkSpaceRepository workSpaceRepository;
-    private final UserRepository userRepository;
-    private final MemberRepository memberRepository;
+    private final UserService userService;
+    private final MemberService memberService;
+    private final CharacterEncodingFilter characterEncodingFilter;
 
     public List<WorkSpaceNameResponse> findWorkSpaces(AuthUser authUser) {
+        User user = userService.getUser(authUser.getId());
 
-        User user = userRepository.getUserById(authUser.getId());
-
-        List<Long> workSpaceIdList = memberRepository.findWorkspaceByUser(user);
+        List<Long> workSpaceIdList = memberService.getWorkspaceList(user);
         List<String> workSpaceList = workSpaceRepository.findByIdList(workSpaceIdList);
 
         return workSpaceList.stream()
@@ -43,20 +44,17 @@ public class WorkSpaceService {
     }
 
     public WorkSpaceResponse findWorkspace(AuthUser authUser, Long id) {
+        memberService.validateMember(authUser.getId(), id);
 
-        isMember(authUser.getId(), id);
-
-        return WorkSpaceResponse.of(findWorkSpaceById(id));
+        return WorkSpaceResponse.of(getWorkSpace(id));
     }
 
     @Transactional
     public WorkSpaceResponse updateWorkSpace(AuthUser authUser, Long id, WorkSpaceUpdateRequest request) {
+        Member member = memberService.validateMember(authUser.getId(), id);
+        memberService.checkManage(member);
 
-        Member member = isMember(authUser.getId(), id);
-        isManage(member);
-
-        WorkSpace workSpace = findWorkSpaceById(id);
-
+        WorkSpace workSpace = getWorkSpace(id);
         workSpace.updateWorkspace(request);
 
         return WorkSpaceResponse.of(workSpace);
@@ -64,48 +62,27 @@ public class WorkSpaceService {
 
     @Transactional
     public void deleteWorkSpace(AuthUser authUser, Long id) {
-
-        Member member = isMember(authUser.getId(), id);
-        isManage(member);
+        Member member = memberService.getMember(authUser.getId(), id);
+        memberService.checkManage(member);
 
         workSpaceRepository.deleteById(id);
     }
 
     @Transactional
     public void addMember(AuthUser authUser, Long id, AddMemberRequest request) {
+        Member member = memberService.getMember(authUser.getId(), id);
+        memberService.checkManage(member);
 
-        Member member = isMember(authUser.getId(), id);
-        isManage(member);
+        User newUser = userService.getUserFromEmail(request.getEmail());
+        WorkSpace workSpace = getWorkSpace(id);
+        memberService.checkDuplicateMember(newUser, workSpace);
 
-        User newUser = userRepository.getUserByEmail(request.getEmail());
-        WorkSpace workSpace = findWorkSpaceById(id);
-
-        checkDuplicateMember(newUser, workSpace);
-
-        memberRepository.save(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
+        memberService.saveMember(new Member(newUser, workSpace, MemberRole.of(request.getMemberRole())));
     }
 
-    private void checkDuplicateMember(User newUser, WorkSpace workSpace) {
-        if (memberRepository.findByUserAndWorkspace(newUser, workSpace).isPresent()) {
-            throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
-        }
-    }
-
-    private Member isMember(Long userId, Long workspaceId) {
-        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId).orElseThrow(
-                () -> new ApiException(ErrorStatus._INVALID_REQUEST)
-        );
-    }
-
-    private WorkSpace findWorkSpaceById(Long id) {
+    public WorkSpace getWorkSpace(Long id) {
         return workSpaceRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
-    }
-
-    public void isManage(Member member) {
-        if (member.getMemberRole() != MemberRole.MANAGE) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
-        }
     }
 }

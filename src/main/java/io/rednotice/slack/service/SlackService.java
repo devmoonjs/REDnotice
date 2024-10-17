@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class SlackService {
 
-    @Value("${SLACK_INCOMING_HOOK_URL}")
+    @Value("${slack.incoming-hook-url}")
     private String webhookUrl;
     private final RestTemplate restTemplate = new RestTemplate();
 
