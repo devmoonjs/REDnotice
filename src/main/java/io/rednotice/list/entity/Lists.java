@@ -29,8 +29,6 @@ public class Lists {
     @OneToMany(mappedBy = "list", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Card> cardList = new ArrayList<>();
 
-    // Integer는 null이 되니까, int로 하자(이유 - 입력 없으면 null대신 0을 뱉는다.)
-//    @Column(unique = true)
     private int sequence;
 
     public Lists(ListsSaveRequest listsSaveRequest, Board board) {
@@ -47,8 +45,4 @@ public class Lists {
         this.sequence = sequence;
     }
 
-    // 보드를 통해 WorkSpace에 접근 가능
-    public WorkSpace getWorkSpace() {
-        return this.board.getWorkspace();
-    }
 }

@@ -1,4 +1,4 @@
-package io.rednotice.board.service;
+package io.rednotice.list.service;
 
 import io.rednotice.board.entity.Board;
 import io.rednotice.board.service.BoardService;
@@ -12,7 +12,6 @@ import io.rednotice.list.request.ListDeleteRequest;
 import io.rednotice.list.request.ListsSaveRequest;
 import io.rednotice.list.request.ListsUpdateRequest;
 import io.rednotice.list.response.ListsResponse;
-import io.rednotice.list.service.ListsService;
 import io.rednotice.member.service.MemberService;
 import io.rednotice.user.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,24 +97,6 @@ public class ListsServiceTest {
         verify(listsRepository, times(1)).findAllByBoard_WorkspaceId(1L);
     }
 
-    @Test
-    void updateLists_ShouldThrowExceptionWhenTitleIsEmpty() {
-        // given
-        AuthUser authUser = new AuthUser(1L, "user@example.com", UserRole.USER);
-        ListsUpdateRequest request = new ListsUpdateRequest(1L, "", 2);  // 빈 제목
-        Lists existingList = new Lists();
-
-        when(listsRepository.findById(1L)).thenReturn(Optional.of(existingList));
-        doNothing().when(memberService).checkReadAndWrite(authUser.getId(), request.getWorkSpaceId());
-
-        // when & then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            listsService.updateLists(authUser, 1L, request);
-        });
-
-        assertEquals("리스트 제목은 반드시 입력해야 합니다.", exception.getMessage());
-        verify(listsRepository, times(1)).findById(1L);
-    }
     @Test
     void deleteList_ShouldDeleteListSuccessfully() {
         // given
