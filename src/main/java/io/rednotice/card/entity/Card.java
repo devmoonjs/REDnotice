@@ -91,4 +91,9 @@ public class Card extends Timestamped {
     public void changeManager(User user) {
         this.manager = user;
     }
+
+    // 조회수 업데이트 메서드
+    public void updateViews(int views) {
+        this.views = views;
+    }
 }

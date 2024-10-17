@@ -88,8 +88,11 @@ public class CardService {
         );
     }
 
+    @Transactional
     public CardDetailResponse getCard(Long cardId) {
         Card card = getCardById(cardId);
+        // 조회수 1 증가
+        card.updateViews(card.getViews() + 1);
         return CardDetailResponse.of(card);
     }
 
