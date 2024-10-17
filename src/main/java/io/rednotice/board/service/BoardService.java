@@ -6,6 +6,7 @@ import io.rednotice.board.request.BoardDeleteRequest;
 import io.rednotice.board.request.BoardSaveRequest;
 import io.rednotice.board.request.BoardUpdateRequest;
 import io.rednotice.board.response.BoardResponse;
+import io.rednotice.board.response.BoardSingleResponse;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
@@ -29,6 +30,7 @@ public class BoardService {
 
     @Transactional
     public BoardResponse saveBoard(BoardSaveRequest request) {
+        checkTitle(request.getTitle()); // 예외처리 : 제목(title)이 없는 경우
         WorkSpace workspace = workSpaceService.getWorkSpace(request.getWorkspaceId());
         Board board = boardRepository.save(new Board(request, workspace));
 
@@ -41,13 +43,14 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
-    public BoardResponse findById(Long id) {
-        return BoardResponse.of(boardRepository.findBoardById(id));
+    public BoardSingleResponse findById(Long id) {
+        return BoardSingleResponse.of(boardRepository.findBoardById(id));
     }
 
 
     @Transactional
     public BoardResponse updateBoard(AuthUser authUser,Long boardId, BoardUpdateRequest updateRequest) {
+        checkTitle(updateRequest.getTitle()); // 예외처리 : 제목(title)이 없는 경우
         memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
         Board board = boardRepository.findBoardById(boardId);
 
@@ -72,5 +75,11 @@ public class BoardService {
         return boardRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
         );
+    }
+
+    private void checkTitle(String title) {
+        if (title.isEmpty()) {
+            throw new ApiException(ErrorStatus._INVALID_TITLE_REQUEST);
+        }
     }
 }

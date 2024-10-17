@@ -9,14 +9,16 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class BoardResponse {
+public class BoardSingleResponse {
     private final String title;
     private final String color;
+    private final List<ListsResponse> lists;
 
-    public static BoardResponse of(Board board) {
-        return new BoardResponse(
+    public static BoardSingleResponse of(Board board) {
+        return new BoardSingleResponse(
                 board.getTitle(),
-                board.getColor()
+                board.getColor(),
+                board.getLists().stream().map(ListsResponse::of).toList()
         );
     }
 }

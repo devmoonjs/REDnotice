@@ -47,21 +47,33 @@ public class ListsService {
         return ListsResponse.of(getListById(id));
     }
 
-    @Transactional
-    public ListsResponse updateLists(AuthUser authUser, Long id, ListsUpdateRequest updateRequest) {
-        memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
-        Lists lists = getListById(id);
 
-        if (updateRequest.getName() != null && updateRequest.getName().isEmpty()) {
-            lists.changeName(updateRequest.getName());
+
+    // 시퀀스 변경 시 다른 리스트들의 순서 업데이트
+    private void updateListSequence(List<Lists> allListsInBoard, Lists updatedList, int newSequence) {
+        int currentSequence = updatedList.getSequence();
+
+        if (newSequence > currentSequence) {
+            // 새로운 시퀀스가 기존 시퀀스보다 클 경우 (즉, 아래로 내려가는 경우)
+            for (Lists list : allListsInBoard) {
+                if (list.getSequence() > currentSequence && list.getSequence() <= newSequence) {
+                    list.changeSequence(list.getSequence() - 1);  // 시퀀스를 하나씩 당김
+                }
+            }
+        } else {
+            // 새로운 시퀀스가 기존 시퀀스보다 작을 경우 (즉, 위로 올라가는 경우)
+            for (Lists list : allListsInBoard) {
+                if (list.getSequence() < currentSequence && list.getSequence() >= newSequence) {
+                    list.changeSequence(list.getSequence() + 1);  // 시퀀스를 하나씩 밀어냄
+                }
+            }
         }
 
-        if (updateRequest.getSequence() != 0) {
-            lists.changeSequence(updateRequest.getSequence());
-        }
-
-        return ListsResponse.of(lists);
+        // 마지막으로 현재 리스트의 시퀀스를 새로운 시퀀스로 변경
+        updatedList.changeSequence(newSequence);
     }
+
+
 
     @Transactional
     public void deleteList(AuthUser authUser, Long id, ListDeleteRequest deleteRequest) {
@@ -74,5 +86,4 @@ public class ListsService {
                 () -> new ApiException(ErrorStatus._NOT_FOUND_LISTS)
         );
     }
-
 }
