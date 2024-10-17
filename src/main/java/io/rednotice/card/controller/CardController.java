@@ -16,45 +16,53 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class CardController {
     private final CardService cardService;
 
-    @PostMapping("/cards")
+    @PostMapping("/cards/v1")
     public ApiResponse<CardResponse> saveCard(@AuthenticationPrincipal AuthUser authUser,
                                               @RequestBody CardSaveRequest cardSaveRequest) {
         return ApiResponse.ok(cardService.saveCard(authUser, cardSaveRequest));
     }
 
-    @PostMapping("/cards/{cardId}/managers")
+    @PostMapping("/cards/v1/{cardId}/managers")
     public ApiResponse<CardManagerResponse> addCardManager(@AuthenticationPrincipal AuthUser authUser,
                                                            @PathVariable Long cardId,
                                                            @RequestBody CardManagerRequest cardManagerRequest) {
         return ApiResponse.ok(cardService.changeManager(authUser, cardId, cardManagerRequest));
     }
 
-    @GetMapping("/cards")
+    @GetMapping("/cards/v1")
     public ApiResponse<Page<CardSearchDto>> searchCards(@ParameterObject CardPageRequest cardPageRequest,
                                                         @ParameterObject CardSearchRequest cardSearchRequest) {
         return ApiResponse.ok(cardService.searchCards(cardPageRequest, cardSearchRequest));
     }
 
-    @GetMapping("/cards/{cardId}")
-    public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
-        return ApiResponse.ok(cardService.getCard(cardId));
+    @GetMapping("/cards/v1/{cardId}")
+    public ApiResponse<CardDetailResponse> getCard(@AuthenticationPrincipal AuthUser authUser,
+                                                   @PathVariable Long cardId) {
+        return ApiResponse.ok(cardService.getCard(authUser, cardId));
+    }
+
+    @GetMapping("/cards/v1/top10")
+    public ApiResponse<List<CardResponse>> getTopRankedCards() {
+        return ApiResponse.ok(cardService.getTopRankedCards());
     }
 
     @SlackNotify
-    @PatchMapping("/cards/{cardId}")
+    @PatchMapping("/cards/v1/{cardId}")
     public ApiResponse<CardResponse> updateCard(@AuthenticationPrincipal AuthUser authUser,
                                                 @PathVariable Long cardId,
                                                 @RequestBody CardUpdateRequest cardUpdateRequest) {
         return ApiResponse.ok(cardService.updateCard(authUser, cardId, cardUpdateRequest));
     }
 
-    @DeleteMapping("/cards/{cardId}")
+    @DeleteMapping("/cards/v1/{cardId}")
     public ApiResponse<String> deleteCard(@AuthenticationPrincipal AuthUser authUser,
                                         @PathVariable Long cardId,
                                         @RequestBody CardDeleteRequest cardDeleteRequest) {

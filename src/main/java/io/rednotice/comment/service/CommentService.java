@@ -1,7 +1,7 @@
 package io.rednotice.comment.service;
 
 import io.rednotice.card.entity.Card;
-import io.rednotice.card.repository.CardRepository;
+import io.rednotice.card.service.CardService;
 import io.rednotice.comment.entity.Comment;
 import io.rednotice.comment.repository.CommentRepository;
 import io.rednotice.comment.request.CommentRequest;
@@ -10,9 +10,7 @@ import io.rednotice.comment.response.CommentResponse;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
-import io.rednotice.member.entity.Member;
-import io.rednotice.member.repository.MemberRepository;
-import io.rednotice.workspace.enums.MemberRole;
+import io.rednotice.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CommentService {
 
-    private final CardRepository cardRepository;
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
+    private final CardService cardService;
+    private final MemberService memberService;
 
     @Transactional
     public CommentResponse saveComment(AuthUser authUser, CommentRequest request) {
-
         validRole(authUser.getId(), request.getCardId());
 
         Comment comment = new Comment(request.getContent());
@@ -39,8 +36,7 @@ public class CommentService {
 
     @Transactional
     public CommentResponse updateComment(AuthUser authUser, CommentUpdateRequest request, Long commentId) {
-
-        isCommentOwner(authUser.getId(), commentId);
+        checkCommentOwner(authUser.getId(), commentId);
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT)
@@ -53,8 +49,7 @@ public class CommentService {
 
     @Transactional
     public void deleteComment(AuthUser authUser, Long id) {
-
-        isCommentOwner(authUser.getId(), id);
+        checkCommentOwner(authUser.getId(), id);
 
         Comment comment = commentRepository.findById(id).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT)
@@ -64,20 +59,11 @@ public class CommentService {
     }
 
     public void validRole(Long userId, Long cardId) {
-
-        Card card = cardRepository.findCardById(cardId);
-
-        Member member = memberRepository.findByUserIdAndWorkspaceId(userId, card.getWorkspace().getId()).orElseThrow(
-                () -> new ApiException(ErrorStatus._PERMISSION_DENIED)
-        );
-
-        if (member.getMemberRole() == MemberRole.READ) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
-        }
+        Card card = cardService.getCard(cardId);
+        memberService.checkReadAndWrite(userId, card.getWorkspace().getId());
     }
 
-    public void isCommentOwner(Long userId, Long commentId) {
-
+    public void checkCommentOwner(Long userId, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT)
         );
