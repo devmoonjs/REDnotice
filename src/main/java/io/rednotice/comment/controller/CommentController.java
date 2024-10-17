@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comments")
+    @PostMapping("/comments/v1")
     public ApiResponse<CommentResponse> saveComment(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody CommentRequest request
@@ -26,7 +26,7 @@ public class CommentController {
         return ApiResponse.ok(commentService.saveComment(authUser, request));
     }
 
-    @PatchMapping("/comments/{id}")
+    @PatchMapping("/comments/v1/{id}")
     public ApiResponse<CommentResponse> updateComment(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestBody CommentUpdateRequest request,
@@ -36,7 +36,7 @@ public class CommentController {
         return ApiResponse.ok(commentService.updateComment(authUser, request, id));
     }
 
-    @DeleteMapping("/comments/{id}")
+    @DeleteMapping("/comments/v1/{id}")
     public ApiResponse<String> deleteComment(
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long id

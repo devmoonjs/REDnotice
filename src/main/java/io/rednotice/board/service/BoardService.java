@@ -54,7 +54,7 @@ public class BoardService {
         memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
         Board board = boardRepository.findBoardById(boardId);
 
-        if (updateRequest.getTitle() != null && updateRequest.getTitle().isEmpty()) {
+        if (updateRequest.getTitle() != null && !updateRequest.getTitle().isEmpty()) {
             board.changeTitle(updateRequest.getTitle());
         }
 

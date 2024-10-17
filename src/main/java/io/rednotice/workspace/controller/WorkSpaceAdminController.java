@@ -33,7 +33,7 @@ public class WorkSpaceAdminController {
     }
 
     @Secured(UserRole.Authority.ADMIN)
-    @PatchMapping("/workspaces/v1{workSpaceId}/members/{memberId}/role")
+    @PatchMapping("/workspaces/v1/{workSpaceId}/members/{memberId}/role")
     public ApiResponse<String> changeMemberRole(
             @PathVariable Long workSpaceId,
             @PathVariable Long memberId,

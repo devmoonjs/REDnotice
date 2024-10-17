@@ -1,5 +1,6 @@
 package io.rednotice.comment.service;
 
+import io.rednotice.auth.service.AuthService;
 import io.rednotice.card.entity.Card;
 import io.rednotice.card.service.CardService;
 import io.rednotice.comment.entity.Comment;
@@ -11,6 +12,8 @@ import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
 import io.rednotice.member.service.MemberService;
+import io.rednotice.user.entity.User;
+import io.rednotice.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +26,14 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CardService cardService;
     private final MemberService memberService;
+    private final UserService userService;
 
     @Transactional
     public CommentResponse saveComment(AuthUser authUser, CommentRequest request) {
         validRole(authUser.getId(), request.getCardId());
-
-        Comment comment = new Comment(request.getContent());
+        Card card = cardService.getCard(request.getCardId());
+        User user = userService.getUser(request.getCardId());
+        Comment comment = new Comment(request.getContent(), card, user);
         commentRepository.save(comment);
 
         return CommentResponse.of(comment);
@@ -68,8 +73,8 @@ public class CommentService {
                 () -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT)
         );
 
-        if (!comment.getUser().getId().equals(userId)) {
-            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
-        }
+//        if (!comment.getUser().getId().equals(userId)) {
+//            throw new ApiException(ErrorStatus._PERMISSION_DENIED);
+//        }
     }
 }
