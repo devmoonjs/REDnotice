@@ -53,9 +53,10 @@ public class MemberService {
     }
 
     public void checkDuplicateMember(User user, WorkSpace workSpace) {
-        memberRepository.findByUserAndWorkspace(user, workSpace).orElseThrow(
-                () -> new ApiException(ErrorStatus._DUPLICATE_MANAGE)
-        );
+        if(memberRepository.findByUserAndWorkspace(user, workSpace).isPresent()){
+            throw new ApiException(ErrorStatus._DUPLICATE_MANAGE);
+        }
+
     }
 
 }
