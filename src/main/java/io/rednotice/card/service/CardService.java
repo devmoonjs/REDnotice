@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
 @Service
@@ -126,10 +127,17 @@ public class CardService {
     public List<CardResponse> getTopRankedCards() {
         // 상위 10개의 카드 ID를 가져옴
         String rankingKey = "card:ranking";
-        List<Long> cardIdList = Objects.requireNonNull(zSetOperations.reverseRange(rankingKey, 0, 9)).stream()
-                .map(cardId -> Long.parseLong(cardId.toString()))
+        Set<Object> cardIdSet  = Objects.requireNonNull(zSetOperations.reverseRange(rankingKey, 0, 9));
+        List<Long> cardIdList = cardIdSet.stream()
+                .map(cardId -> {
+                    if (cardId instanceof Long) {
+                        return (Long) cardId;
+                    } else {
+                        return Long.parseLong(cardId.toString());
+                    }
+                })
                 .toList();
-
+        // 해당 id의 카드를 가져옴
         return cardRepository.findCardsByIds(cardIdList).stream()
                 .map(CardResponse::of)
                 .toList();
