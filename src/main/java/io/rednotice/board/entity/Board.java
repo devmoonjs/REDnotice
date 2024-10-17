@@ -1,6 +1,7 @@
 package io.rednotice.board.entity;
 
 import io.rednotice.board.request.BoardSaveRequest;
+import io.rednotice.card.entity.Card;
 import io.rednotice.list.entity.Lists;
 import io.rednotice.workspace.entity.WorkSpace;
 import jakarta.persistence.Entity;
@@ -26,7 +27,6 @@ public class Board {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Lists> lists = new ArrayList<>();
-
 
     @Column(length = 20)
     private String title;

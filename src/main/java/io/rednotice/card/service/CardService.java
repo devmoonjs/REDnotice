@@ -19,8 +19,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 
 @Service
@@ -33,6 +40,8 @@ public class CardService {
     private final ListsService listsService;
     private final BoardService boardService;
     private final WorkSpaceService workSpaceService;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ZSetOperations<String, Object> zSetOperations;
 
     /**
      * 1. 모든 도메인에서 member role 체크가 있음.
@@ -88,9 +97,50 @@ public class CardService {
         );
     }
 
-    public CardDetailResponse getCard(Long cardId) {
+    @Transactional
+    public CardDetailResponse getCard(AuthUser authUser, Long cardId) {
         Card card = getCardById(cardId);
+
+        // 유저별 조회 방지를 위한 Redis 키 생성
+        String userViewKey = "card:views:" + cardId + ":user:" + authUser.getId();
+
+        // 유저가 이미 조회한 기록이 있으면 즉시 반환
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(userViewKey))) {
+            return CardDetailResponse.of(card);
+        }
+
+        // Redis에서 조회수 키 생성
+        String redisKey = "card:views:" + cardId;
+        redisTemplate.opsForValue().increment(redisKey);
+
+        // 인기 카드 랭킹에 추가 (Sorted Set 사용)
+        String rankingKey = "card:ranking";
+        zSetOperations.incrementScore(rankingKey, cardId, 1);
+
+        // 유저별 조회 기록을 Redis에 저장하고 10분 동안 유지
+        redisTemplate.opsForValue().set(userViewKey, "viewed", Duration.ofMinutes(10));
+
         return CardDetailResponse.of(card);
+    }
+
+    // 인기 카드 조회 (Top 10)
+    public List<CardResponse> getTopRankedCards() {
+        // 상위 10개의 카드 ID를 가져옴
+        String rankingKey = "card:ranking";
+        Set<Object> cardIdSet  = Objects.requireNonNull(zSetOperations.reverseRange(rankingKey, 0, 9));
+        List<Long> cardIdList = cardIdSet.stream()
+                .map(cardId -> {
+                    if (cardId instanceof Long) {
+                        return (Long) cardId;
+                    } else {
+                        return Long.parseLong(cardId.toString());
+                    }
+                })
+                .toList();
+        // 해당 id의 카드를 가져옴
+        return cardRepository.findCardsByIds(cardIdList).stream()
+                .map(CardResponse::of)
+                .toList();
     }
 
     @Transactional
