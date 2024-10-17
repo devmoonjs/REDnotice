@@ -15,14 +15,14 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/attachments")
+@RequestMapping("/api/attachments")
 
 public class AttachmentController {
 
     @Autowired
     private final AttachmentService attachmentService;
 
-    @PostMapping("/upload")
+    @PostMapping("/v1/upload")
     public ApiResponse<Attachment> uploadFile(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
@@ -31,12 +31,12 @@ public class AttachmentController {
         return ApiResponse.ok(attachmentService.uploadFile(file,cardId));
     }
 
-    @GetMapping("/cards/{cardId}")
+    @GetMapping("/v1/cards/{cardId}")
     public ApiResponse<List<Attachment>> getAttachments(@PathVariable Long cardId) {
         return ApiResponse.ok(attachmentService.getAttachment(cardId));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/v1/{id}")
     public ApiResponse<Void> deleteAttachment(@PathVariable Long id) {
         return ApiResponse.ok(attachmentService.deleteAttachment(id));
 

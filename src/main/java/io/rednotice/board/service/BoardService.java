@@ -10,14 +10,9 @@ import io.rednotice.board.response.BoardSingleResponse;
 import io.rednotice.common.AuthUser;
 import io.rednotice.common.apipayload.status.ErrorStatus;
 import io.rednotice.common.exception.ApiException;
-import io.rednotice.member.entity.Member;
-import io.rednotice.member.repository.MemberRepository;
+import io.rednotice.member.service.MemberService;
 import io.rednotice.workspace.entity.WorkSpace;
-import io.rednotice.workspace.enums.MemberRole;
-import io.rednotice.workspace.repository.WorkSpaceRepository;
-import io.rednotice.workspace.request.WorkSpaceSaveRequest;
-import io.rednotice.workspace.request.WorkSpaceUpdateRequest;
-import io.rednotice.workspace.response.WorkSpaceResponse;
+import io.rednotice.workspace.service.WorkSpaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +25,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final WorkSpaceRepository workSpaceRepository;
-    private final MemberRepository memberRepository;
-
+    private final WorkSpaceService workSpaceService;
+    private final MemberService memberService;
 
     @Transactional
     public BoardResponse saveBoard(BoardSaveRequest request) {
         checkTitle(request.getTitle()); // 예외처리 : 제목(title)이 없는 경우
-        WorkSpace workspace = findWorkSpaceById(request.getWorkspaceId());
+        WorkSpace workspace = workSpaceService.getWorkSpace(request.getWorkspaceId());
         Board board = boardRepository.save(new Board(request, workspace));
 
         return BoardResponse.of(board);
@@ -57,7 +51,7 @@ public class BoardService {
     @Transactional
     public BoardResponse updateBoard(AuthUser authUser,Long boardId, BoardUpdateRequest updateRequest) {
         checkTitle(updateRequest.getTitle()); // 예외처리 : 제목(title)이 없는 경우
-        checkMemberRole(authUser.getId(), updateRequest.getWorkSpaceId());
+        memberService.checkReadAndWrite(authUser.getId(), updateRequest.getWorkSpaceId());
         Board board = boardRepository.findBoardById(boardId);
 
         if (updateRequest.getTitle() != null && updateRequest.getTitle().isEmpty()) {
@@ -73,13 +67,13 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(AuthUser authuser, Long id, BoardDeleteRequest boardDeleteRequest) {
-        checkMemberRole(authuser.getId(), boardDeleteRequest.getWorkSpaceId());
+        memberService.checkReadAndWrite(authuser.getId(), boardDeleteRequest.getWorkSpaceId());
         boardRepository.deleteById(id);
     }
 
-    private WorkSpace findWorkSpaceById(Long id) {
-        return workSpaceRepository.findById(id).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
+    public Board getBoardById(Long id) {
+        return boardRepository.findById(id).orElseThrow(
+                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
         );
     }
 

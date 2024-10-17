@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: ${LOCAL_DB_URL}
-    username: ${LOCAL_DB_USERNAME}
-    password: ${LOCAL_DB_PASSWORD}
+    url: jdbc:mysql://rednotice-db.chc6aqwsg4ny.ap-northeast-2.rds.amazonaws.com:3306/rednotice
+
+    username: admin
+    password: ${RDS_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   servlet:

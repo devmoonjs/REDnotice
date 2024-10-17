@@ -16,8 +16,8 @@ public interface WorkSpaceRepository extends JpaRepository<WorkSpace, Long> {
     @Query("SELECT w.name FROM WorkSpace w WHERE w.id IN :workSpaceIdList")
     List<String> findByIdList(@Param("workSpaceIdList") List<Long> workSpaceIdList);
 
-    default WorkSpace getWorkspaceById(Long workspcaeId) {
-        return findById(workspcaeId).orElseThrow(
+    default WorkSpace getWorkspaceById(Long workspaceId) {
+        return findById(workspaceId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_WORKSPACE)
         );
     }

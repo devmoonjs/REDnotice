@@ -1,4 +1,4 @@
-package io.rednotice.config;
+package io.rednotice.common.utils;
 
 
 import io.jsonwebtoken.Claims;

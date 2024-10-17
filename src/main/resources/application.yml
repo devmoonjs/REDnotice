@@ -6,6 +6,8 @@ jwt:
   secret:
     key: ${JWT_SECRET_KEY}
 
+slack:
+  incoming-hook-url: ${SLACK_INCOMING_HOOK_URL}
 
 cloud:
   aws:

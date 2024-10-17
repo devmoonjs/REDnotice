@@ -11,7 +11,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    default User getUserById(Long memberId) {
+    default User findUserById(Long memberId) {
         return findById(memberId).orElseThrow(
                 () -> new ApiException(ErrorStatus._NOT_FOUND_USER)
         );
