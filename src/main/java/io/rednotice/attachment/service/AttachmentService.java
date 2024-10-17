@@ -28,7 +28,7 @@ public class AttachmentService {
     @Transactional
     public Attachment uploadFile(MultipartFile file, Long cardId) throws ApiException {
 
-        Card card = cardService.getCardById(cardId);
+        Card card = cardService.getCard(cardId);
 
 
         AttachmentValidation.validationFile(file);
