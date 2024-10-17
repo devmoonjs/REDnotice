@@ -37,13 +37,13 @@ public class BoardService {
         return BoardResponse.of(board);
     }
 
-    public List<BoardResponse> findAll() {
+    public List<BoardResponse> searchBoards() {
         return boardRepository.findAll().stream()
                 .map(BoardResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public BoardSingleResponse findById(Long id) {
+    public BoardSingleResponse getBoardId(Long id) {
         return BoardSingleResponse.of(boardRepository.findBoardById(id));
     }
 
