@@ -89,4 +89,8 @@ public class Card extends Timestamped {
         this.manager = user;
     }
 
+    public void setId(long id) {
+        this.id = id;
+
+    }
 }

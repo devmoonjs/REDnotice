@@ -52,4 +52,8 @@ public class User extends Timestamped {
     public void update() {
         this.status = UserStatus.WITHDRAWAL;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

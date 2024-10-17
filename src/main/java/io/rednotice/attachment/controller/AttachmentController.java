@@ -22,11 +22,11 @@ public class AttachmentController {
     @Autowired
     private final AttachmentService attachmentService;
 
-    @PostMapping("/v1/upload")
+    @PostMapping("/v1/cards/{cardId}/upload")
     public ApiResponse<Attachment> uploadFile(
             @AuthenticationPrincipal AuthUser authUser,
             @RequestParam("file") MultipartFile file,
-            @RequestParam Long cardId) {
+            @PathVariable Long cardId) {
 
         return ApiResponse.ok(attachmentService.uploadFile(file,cardId));
     }
