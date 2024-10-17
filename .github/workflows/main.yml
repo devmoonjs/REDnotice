@@ -29,7 +29,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: Log in to Amazon ECR
+      - name: LogIn Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
@@ -72,7 +72,7 @@ jobs:
             docker pull $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
             
             # 새 컨테이너 실행
-            docker run -d --name REDnotice -p 8080:8080 \
+            docker run -d --name REDnotice -p 80:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e SLACK_INCOMING_HOOK_URL=${{ secrets.SLACK_INCOMING_HOOK_URL }} \
               -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
