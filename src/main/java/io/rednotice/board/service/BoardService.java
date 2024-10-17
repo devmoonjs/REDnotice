@@ -77,14 +77,6 @@ public class BoardService {
         );
     }
 
-    private void checkMemberRole(Long userId, Long workSpaceId) {
-        // 읽기 전용 역할인 경우 예외 발생
-        Member member = memberRepository.getMember(userId, workSpaceId);
-        if (member.getMemberRole().equals(MemberRole.READ)) {
-            throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
-        }
-    }
-
     private void checkTitle(String title) {
         if (title.isEmpty()) {
             throw new ApiException(ErrorStatus._INVALID_TITLE_REQUEST);

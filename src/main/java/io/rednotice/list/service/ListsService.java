@@ -86,18 +86,4 @@ public class ListsService {
                 () -> new ApiException(ErrorStatus._NOT_FOUND_LISTS)
         );
     }
-
-    private Board findBoardById(Long id) {
-        return boardRepository.findById(id).orElseThrow(
-                () -> new ApiException(ErrorStatus._NOT_FOUND_BOARD)
-        );
-    }
-
-    private void checkMemberRole(Long userId, Long workSpaceId) {
-        // 읽기 전용 역할인 경우 예외 발생
-        Member member = memberRepository.getMember(userId, workSpaceId);
-        if (member.getMemberRole().equals(MemberRole.READ)) {
-            throw new ApiException(ErrorStatus._READ_ONLY_ROLE);
-        }
-    }
 }
