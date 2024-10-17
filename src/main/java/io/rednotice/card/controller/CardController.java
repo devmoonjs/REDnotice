@@ -44,8 +44,9 @@ public class CardController {
     }
 
     @GetMapping("/cards/{cardId}")
-    public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
-        return ApiResponse.ok(cardService.getCard(cardId));
+    public ApiResponse<CardDetailResponse> getCard(@AuthenticationPrincipal AuthUser authUser,
+                                                   @PathVariable Long cardId) {
+        return ApiResponse.ok(cardService.getCard(authUser, cardId));
     }
 
     @GetMapping("/cards/top10")

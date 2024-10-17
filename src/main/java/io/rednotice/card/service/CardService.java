@@ -24,6 +24,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
@@ -96,8 +97,16 @@ public class CardService {
     }
 
     @Transactional
-    public CardDetailResponse getCard(Long cardId) {
+    public CardDetailResponse getCard(AuthUser authUser, Long cardId) {
         Card card = getCardById(cardId);
+
+        // 유저별 조회 방지를 위한 Redis 키 생성
+        String userViewKey = "card:views:" + cardId + ":user:" + authUser.getId();
+
+        // 유저가 이미 조회한 기록이 있으면 즉시 반환
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(userViewKey))) {
+            return CardDetailResponse.of(card);
+        }
 
         // Redis에서 조회수 키 생성
         String redisKey = "card:views:" + cardId;
@@ -106,6 +115,9 @@ public class CardService {
         // 인기 카드 랭킹에 추가 (Sorted Set 사용)
         String rankingKey = "card:ranking";
         zSetOperations.incrementScore(rankingKey, cardId, 1);
+
+        // 유저별 조회 기록을 Redis에 저장하고 10분 동안 유지
+        redisTemplate.opsForValue().set(userViewKey, "viewed", Duration.ofMinutes(10));
 
         return CardDetailResponse.of(card);
     }
