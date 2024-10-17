@@ -17,7 +17,6 @@ public class CardDetailResponse {   // 카드 단건 조회 시 반환 DTO
     private final String description;
     private final LocalDate dueDate;
     private final int seq;
-    private final int views;
     private final UserDto userDto;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
@@ -31,7 +30,6 @@ public class CardDetailResponse {   // 카드 단건 조회 시 반환 DTO
                 card.getDescription(),
                 card.getDueDate(),
                 card.getSeq(),
-                card.getViews(),
                 new UserDto(card.getUser().getId(), card.getUser().getEmail(), card.getUser().getUsername()),
                 card.getCreatedAt(),
                 card.getModifiedAt()
