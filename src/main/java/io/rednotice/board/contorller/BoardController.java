@@ -28,18 +28,18 @@ public class BoardController {
         return ApiResponse.ok(response);
     }
 
-    // 보드 리스트 조회
+    // 보드 다건 조회
     @GetMapping("/boards")
-    public ApiResponse<List<BoardResponse>> findAll() {
+    public ApiResponse<List<BoardResponse>> searchBoards() {
 
-        return ApiResponse.ok(boardService.findAll());
+        return ApiResponse.ok(boardService.searchBoards());
     }
 
     // 보드 단건 조회
     @GetMapping("/boards/{boardId}")
     public ApiResponse<BoardSingleResponse> getBoard(@PathVariable Long boardId) {
 
-        return ApiResponse.ok(boardService.findById(boardId));
+        return ApiResponse.ok(boardService.getBoardId(boardId));
     }
 
     // 보드 내용(color, title) 업데이트

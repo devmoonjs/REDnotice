@@ -31,13 +31,13 @@ public class ListsController {
     // 다건 조회
     @GetMapping("/lists")
     private ApiResponse<List<ListsResponse>> findAllLists() {
-        return ApiResponse.ok(listsService.findAll());
+        return ApiResponse.ok(listsService.getAllLists());
     }
 
     // 단건 조회
     @GetMapping("/lists/{listId}")
     private ApiResponse<ListsResponse> getListId(@PathVariable Long listId) {
-        return ApiResponse.ok(listsService.findById(listId));
+        return ApiResponse.ok(listsService.getId(listId));
     }
 
     // 리스트 수정
