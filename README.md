@@ -6,6 +6,15 @@
 
 <br>
 
+### ERD
+<img src="./image/ERD.png" width = 100%>
+
+<br>
+
+### 아키텍쳐
+<img src="./image/architecture.png"  width = 100%>
+
+
 ## 2. 주요 기술 스택
 
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white">
@@ -52,7 +61,7 @@
 | **검색**                        | **한지은** |
 | **최적화**                       | **김현수** |
 | **캐싱**                        | **한지은** |
-| **배포와 CI/CD**                 | **문정석** |
+| **CI/CD**                 | **문정석** |
 
 <br>
 
@@ -98,7 +107,7 @@
 <br>
 
 
-## **CI/CD 자동화: 신속하고 안정적인 배포**
+### **CI/CD 자동화: 신속하고 안정적인 배포**
 
 #### 문제 정의
 - **수동 배포의 비효율성**: 코드 변경 시마다 수동으로 빌드, 테스트, 배포를 수행하는 것은 시간 소모가 크고 비효율적이었습니다.
@@ -221,15 +230,4 @@
 - **카드 검색**: 카드의 제목, 내용, 마감일, 담당자 등을 기준으로 페이징 처리된 검색 결과를 제공합니다. 또한 특정 보드 내 모든 카드를 검색할 수 있습니다.
 
 ---
----
-<br>
-
-## 5. ERD
-<img src="./image/ERD.png" width = 100%>
-
-<br>
-
-## 6. 아키텍처
-<img src="./image/architecture.png"  width = 100%>
-
 <br>
