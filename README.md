@@ -6,14 +6,15 @@
 
 <br>
 
-### ERD
-<img src="./image/ERD.png" width = 100%>
 
-<br>
 
 ### 아키텍쳐
 <img src="./image/architecture.png"  width = 100%>
 
+### ERD
+<img src="./image/ERD.png" width = 100%>
+
+<br>
 
 ## 2. 주요 기술 스택
 
