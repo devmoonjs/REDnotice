@@ -60,7 +60,7 @@
 
 ### **데이터 성능 최적화: 인덱싱과 캐싱**
 
-#### 인덱싱 (Indexing)
+### 인덱싱 (Indexing)
 
   <img src="./image/indexing_output.png" width = 100%>
   <img src="./image/indexing_query.png" width = 100%>
@@ -75,7 +75,10 @@
 ##### 첨부 자료
 - 쿼리 속도 비교(before, after)
 
-#### 캐싱 (Caching)
+<br>
+<br>
+
+### 캐싱 (Caching)
   <img src="./image/caching_before.png" width = 100%>
   <img src="./image/caching_after.png" width = 100%>
 
@@ -91,9 +94,11 @@
 - 자정에 조회수를 리셋하는 캐시 전략
 - 캐시 적용 전후의 카드 조회 성능 비교
 
----
+<br>
+<br>
 
-### **CI/CD 자동화: 신속하고 안정적인 배포**
+
+## **CI/CD 자동화: 신속하고 안정적인 배포**
 
 #### 문제 정의
 - **수동 배포의 비효율성**: 코드 변경 시마다 수동으로 빌드, 테스트, 배포를 수행하는 것은 시간 소모가 크고 비효율적이었습니다.
