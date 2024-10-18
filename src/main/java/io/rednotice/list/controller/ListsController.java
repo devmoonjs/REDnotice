@@ -16,12 +16,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/lists")
 public class ListsController {
     private final ListsService listsService;
 
     // 리스트 생성
-    @PostMapping("/lists")
+    @PostMapping("/v1")
     private ApiResponse<ListsResponse> saveList(@AuthenticationPrincipal AuthUser authUser,
                                                 @RequestBody ListsSaveRequest request) {
         ListsResponse response = listsService.saveLists(authUser,request);
@@ -29,25 +29,25 @@ public class ListsController {
     }
 
     // 다건 조회
-    @GetMapping("/lists")
+    @GetMapping("/v1")
     private ApiResponse<List<ListsResponse>> findAllLists() {
         return ApiResponse.ok(listsService.getAllLists());
     }
 
     // 단건 조회
-    @GetMapping("/lists/{listId}")
+    @GetMapping("/v1/{listId}")
     private ApiResponse<ListsResponse> getListId(@PathVariable Long listId) {
         return ApiResponse.ok(listsService.getId(listId));
     }
 
     // 리스트 수정
-    @PatchMapping("/lists/{listId}")
+    @PatchMapping("/v1/{listId}")
     private ApiResponse<ListsResponse> updateList(@AuthenticationPrincipal AuthUser authUser,@PathVariable Long listId, @RequestBody ListsUpdateRequest request) {
         return ApiResponse.ok(listsService.updateLists(authUser, listId, request));
     }
 
     // 리스트 삭제
-    @DeleteMapping("/lists/{listId}")
+    @DeleteMapping("/v1/{listId}")
     private ApiResponse<String> deleteList(@AuthenticationPrincipal AuthUser authUser,
                                            @PathVariable Long listId,
                                            @RequestBody ListDeleteRequest listDeleteRequest) {
