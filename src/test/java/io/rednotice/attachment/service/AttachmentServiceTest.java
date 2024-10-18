@@ -63,7 +63,7 @@ class AttachmentServiceTest {
     @Test
     void uploadFile_Success() {
         // Given
-        when(cardService.getCardById(anyLong())).thenReturn(card);
+        when(cardService.getCard(anyLong())).thenReturn(card);
         when(s3ServiceUtil.uploadFile(any(MultipartFile.class), anyString())).thenReturn("https://example.com/file.txt");
         when(multipartFile.getOriginalFilename()).thenReturn("file.txt");
         when(multipartFile.getContentType()).thenReturn("text/plain");
@@ -82,7 +82,7 @@ class AttachmentServiceTest {
             assertEquals("text/plain", result.getFileType());
             assertEquals(card, result.getCard());
 
-            verify(cardService).getCardById(1L);
+            verify(cardService).getCard(1L);
             verify(s3ServiceUtil).uploadFile(multipartFile, "rednotice-sample");
             verify(attachmentRepository).save(any(Attachment.class));
         }
